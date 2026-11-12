@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuis Perkalian</title><link rel="stylesheet" href="../style.css"></head>
+<body><div class="top"><a href="/">← Kembali</a></div>
+<div class="wrap"><h1>Kuis Perkalian</h1>
+<div id="set"><p>Pilih tabel:</p><div class="opts" id="t"></div></div>
+<div id="play" hidden><p id="no" style="color:var(--mute)"></p>
+<div id="q" style="font-size:clamp(48px,14vw,90px);font-weight:700"></div>
+<div class="opts" id="o"></div><div class="msg" id="m"></div></div></div>
+<script>
+let tab=0,i=0,skor=0,a=0;const TOTAL=10;
+for(let k=2;k<=10;k++){const x=document.createElement("button");x.className="opt";x.textContent=k;x.onclick=()=>{tab=k;i=0;skor=0;set.hidden=true;play.hidden=false;soal()};t.appendChild(x)}
+function soal(){
+  if(i>=TOTAL){q.textContent="Skor: "+skor+"/"+TOTAL;o.innerHTML='<button class="btn" onclick="location.reload()">Main lagi</button>';m.textContent=skor>=8?"Hebat sekali! 🏆":"Ayo coba lagi 💪";no.textContent="";return}
+  i++;const b=1+Math.floor(Math.random()*10);a=tab*b;
+  no.textContent="Soal "+i+" dari "+TOTAL;q.textContent=tab+" × "+b+" = ?";m.textContent="";
+  let p=new Set([a]);while(p.size<4){const d=tab*(1+Math.floor(Math.random()*10));p.add(d)}
+  o.innerHTML="";[...p].sort(()=>Math.random()-.5).forEach(v=>{
+    const x=document.createElement("button");x.className="opt";x.textContent=v;
+    x.onclick=()=>{if(v===a){skor++;m.textContent="Benar! ✅"}else m.textContent="Jawabannya "+a;
+      [...o.children].forEach(c=>c.disabled=true);setTimeout(soal,1100)};o.appendChild(x)});
+}
+</script></body></html>

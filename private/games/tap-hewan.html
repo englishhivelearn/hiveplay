@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tap Hewan</title><link rel="stylesheet" href="../style.css"></head>
+<body><div class="top"><a href="/">← Kembali</a></div>
+<div class="wrap"><h1>Tap Hewan</h1>
+<div class="opts" id="a"></div><div class="msg" id="m"></div></div>
+<script>
+const H=[["🐶","Anjing"],["🐱","Kucing"],["🐮","Sapi"],["🐔","Ayam"],["🐸","Katak"],["🐘","Gajah"]];
+function bicara(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="id-ID";u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
+H.forEach(([e,n])=>{const b=document.createElement("button");b.className="big";b.textContent=e;b.setAttribute("aria-label",n);
+ b.onclick=()=>{b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");m.textContent=n;bicara(n)};a.appendChild(b)});
+</script></body></html>
