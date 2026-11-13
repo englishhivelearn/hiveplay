@@ -21,7 +21,8 @@ nav button{border:2px solid var(--card);background:transparent;color:var(--ink);
 nav button[aria-selected=true]{background:var(--moon);border-color:var(--moon);color:var(--on-moon)}
 button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
 main{max-width:960px;margin:18px auto 40px;padding:0 20px}
-section{display:none}section.on{display:block}
+section{display:none}section.on{display:block;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}}
 .panel{background:var(--card);border-radius:24px;padding:22px}
 .btn{border:0;background:var(--mint);color:#06281d;padding:12px 22px;border-radius:14px;font-size:18px;cursor:pointer;font-weight:700}
 .btn.alt{background:transparent;color:var(--ink);border:2px solid var(--mute)}
@@ -49,6 +50,16 @@ input[type=range]{width:100%;accent-color:var(--moon)}
 .card{aspect-ratio:1;border:0;border-radius:16px;background:var(--bg2);color:transparent;font-size:17px;font-weight:700;cursor:pointer;padding:6px;display:grid;place-items:center;transition:transform .2s,background .2s}
 .card.up{background:var(--moon);color:var(--on-moon);transform:rotateY(0)}
 .card.done{background:var(--mint);color:#06281d}
+.card.up{animation:balik .35s}
+@keyframes balik{from{transform:rotateY(90deg)}}
+.card.done{animation:cocok .5s}
+@keyframes cocok{40%{transform:scale(1.18) rotate(4deg)}}
+.card.salah{animation:geleng .4s}
+@keyframes geleng{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.big.hasil{animation:hasil .6s}
+@keyframes hasil{from{opacity:0;transform:scale(.3) rotate(-10deg)}60%{transform:scale(1.15)}}
+.card{animation:masukkartu .35s both;animation-delay:calc(var(--i,0)*40ms)}
+@keyframes masukkartu{from{opacity:0;transform:scale(.6)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -121,10 +132,12 @@ apple=apel</textarea>
 
 </main>
 <script>
+window.HPHold=true; /* tab pertama = Beruang Tidur: musik ditahan */
 const $=id=>document.getElementById(id);
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));
+  window.HPHold=b.dataset.t==='g1';window.HP&&HP.hold(window.HPHold);
 });
 
 /* ===== Beruang Tidur ===== */
@@ -169,7 +182,7 @@ function loop(){
   $('pat').style.width=patience+'%';
   $('pt').textContent=Math.round(patience)+'%';
   $('streak').textContent='Waktu tenang: '+Math.floor(quietSec)+' detik';
-  if(patience<=0){over=true;setState('awake');$('status').textContent='Beruangnya bangun! Kelas terlalu ribut.'}
+  if(patience<=0){over=true;setState('awake');window.HP&&HP.no();$('status').textContent='Beruangnya bangun! Kelas terlalu ribut.'}
   else if(patience<55){setState('stir');$('status').textContent='Beruang mulai terganggu… pelan-pelan ya!'}
   else{setState('sleep');$('status').textContent='Shh… beruang sedang tidur nyenyak.'}
 }
@@ -187,8 +200,8 @@ $('spin').onclick=()=>{
   const win=pool[Math.floor(Math.random()*pool.length)];
   $('spin').disabled=true;let i=0;
   const t=setInterval(()=>{
-    $('pick').textContent=all[Math.floor(Math.random()*all.length)];
-    if(++i>18){clearInterval(t);$('pick').textContent='🎉 '+win;used.push(win);$('spin').disabled=false}
+    $('pick').textContent=all[Math.floor(Math.random()*all.length)];window.HP&&HP.tick();
+    if(++i>18){clearInterval(t);$('pick').textContent='🎉 '+win;used.push(win);$('spin').disabled=false;const p=$('pick');p.classList.remove('hasil');void p.offsetWidth;p.classList.add('hasil');window.HP&&HP.win()}
   },80);
 };
 
@@ -203,24 +216,25 @@ $('deal').onclick=()=>{
   $('moves').textContent='Langkah: 0';
   const g=$('grid');g.innerHTML='';
   cards.forEach(c=>{
-    const b=document.createElement('button');b.className='card';b.textContent=c.t;b.dataset.k=c.k;
+    const b=document.createElement('button');b.className='card';b.textContent=c.t;b.dataset.k=c.k;b.style.setProperty('--i',g.children.length);
     b.onclick=()=>flip(b);g.appendChild(b);
   });
 };
 function flip(b){
   if(lock||b.classList.contains('up')||b.classList.contains('done'))return;
-  b.classList.add('up');
+  b.classList.add('up');window.HP&&HP.flip();
   if(!first){first=b;return}
   moves++;$('moves').textContent='Langkah: '+moves;
   if(first.dataset.k===b.dataset.k){
-    first.className=b.className='card done';first=null;matched++;
-    if(matched===total)$('moves').textContent='Selesai dalam '+moves+' langkah! 🎉';
+    first.className=b.className='card done';first=null;matched++;window.HP&&HP.match();
+    if(matched===total){$('moves').textContent='Selesai dalam '+moves+' langkah! 🎉';window.HP&&HP.win()}
   }else{
     lock=true;const a=first;first=null;
-    setTimeout(()=>{a.classList.remove('up');b.classList.remove('up');lock=false},900);
+    a.classList.add('salah');b.classList.add('salah');window.HP&&HP.no();
+    setTimeout(()=>{a.classList.remove('up','salah');b.classList.remove('up','salah');lock=false},900);
   }
 }
 $('deal').click();
 </script>
-</body>
+<script src="/hive.js" defer></script></body>
 </html>

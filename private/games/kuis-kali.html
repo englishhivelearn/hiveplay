@@ -1,23 +1,44 @@
 <!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kuis Perkalian</title><link rel="stylesheet" href="../style.css"></head>
-<body><div class="top"><a href="/">← Kembali</a></div>
-<div class="wrap"><h1>Kuis Perkalian</h1>
-<div id="set"><p>Pilih tabel:</p><div class="opts" id="t"></div></div>
-<div id="play" hidden><p id="no" style="color:var(--mute)"></p>
-<div id="q" style="font-size:clamp(48px,14vw,90px);font-weight:700"></div>
-<div class="opts" id="o"></div><div class="msg" id="m"></div></div></div>
-<script>
-let tab=0,i=0,skor=0,a=0;const TOTAL=10;
-for(let k=2;k<=10;k++){const x=document.createElement("button");x.className="opt";x.textContent=k;x.onclick=()=>{tab=k;i=0;skor=0;set.hidden=true;play.hidden=false;soal()};t.appendChild(x)}
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuis Perkalian · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css"></head><body>
+<div class="top"><a class="back" href="/">← Kembali</a></div>
+<main>
+<h1 class="rise">Kuis Perkalian</h1>
+<section class="stage rise" style="--i:1">
+<div id="set"><p class="hint">Pilih tabel yang mau dilatih:</p><div class="opts" id="t"></div></div>
+<div id="play" hidden>
+<div class="bar" aria-hidden="true"><i id="bar"></i></div>
+<p class="hint" id="no"></p>
+<div class="q" id="q"></div>
+<div class="opts" id="o"></div><div class="msg" id="m" aria-live="polite"></div></div>
+</section>
+</main>
+<script src="/art.js"></script>
+<script>let tab=0,i=0,skor=0,a=0;const TOTAL=10;
+const $=id=>document.getElementById(id);
+for(let k=2;k<=10;k++){const x=document.createElement('button');x.className='opt';x.textContent=k;x.style.setProperty('--i',k-2);
+  x.onclick=()=>{window.HP&&HP.pop();tab=k;i=0;skor=0;$('set').hidden=true;$('play').hidden=false;soal()};$('t').appendChild(x)}
 function soal(){
-  if(i>=TOTAL){q.textContent="Skor: "+skor+"/"+TOTAL;o.innerHTML='<button class="btn" onclick="location.reload()">Main lagi</button>';m.textContent=skor>=8?"Hebat sekali! 🏆":"Ayo coba lagi 💪";no.textContent="";return}
+  $('bar').style.width=(i/TOTAL*100)+'%';
+  if(i>=TOTAL){
+    const hebat=skor>=8;
+    $('q').className='q';$('q').innerHTML='<span class="piala">'+(hebat?ART.trophy:ART.star)+'</span><br>Skor: '+skor+'/'+TOTAL;
+    $('o').innerHTML='<button class="btn" onclick="location.reload()">Main lagi</button>';
+    $('m').textContent=hebat?'Hebat sekali!':'Ayo coba lagi!';$('no').textContent='';
+    if(hebat&&window.HP)HP.win();return}
   i++;const b=1+Math.floor(Math.random()*10);a=tab*b;
-  no.textContent="Soal "+i+" dari "+TOTAL;q.textContent=tab+" × "+b+" = ?";m.textContent="";
-  let p=new Set([a]);while(p.size<4){const d=tab*(1+Math.floor(Math.random()*10));p.add(d)}
-  o.innerHTML="";[...p].sort(()=>Math.random()-.5).forEach(v=>{
-    const x=document.createElement("button");x.className="opt";x.textContent=v;
-    x.onclick=()=>{if(v===a){skor++;m.textContent="Benar! ✅"}else m.textContent="Jawabannya "+a;
-      [...o.children].forEach(c=>c.disabled=true);setTimeout(soal,1100)};o.appendChild(x)});
-}
-</script></body></html>
+  $('no').textContent='Soal '+i+' dari '+TOTAL;$('q').textContent=tab+' × '+b+' = ?';$('m').textContent='';
+  $('q').className='q';void $('q').offsetWidth;$('q').className='q masuk';
+  const p=new Set([a]);while(p.size<4){p.add(tab*(1+Math.floor(Math.random()*10)))}
+  $('o').innerHTML='';[...p].sort(()=>Math.random()-.5).forEach((v,k)=>{
+    const x=document.createElement('button');x.className='opt';x.textContent=v;x.style.setProperty('--i',k);
+    x.onclick=()=>{
+      [...$('o').children].forEach(c=>{c.disabled=true;if(+c.textContent===a)c.classList.add('benar')});
+      if(v===a){skor++;window.HP&&HP.ok();$('m').textContent='Benar!'}
+      else{x.classList.remove('benar');x.classList.add('salah');window.HP&&HP.no();$('m').textContent='Jawabannya '+a}
+      setTimeout(soal,1300)};
+    $('o').appendChild(x)});
+}</script>
+<script src="/hive.js" defer></script></body></html>

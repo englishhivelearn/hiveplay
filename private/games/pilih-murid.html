@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pilih Murid · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css"></head><body>
+<div class="top"><a class="back" href="/">← Kembali</a></div>
+<main>
+<h1 class="rise">Pilih Murid</h1>
+<p class="sub rise" style="--i:1">Tulis nama murid, satu baris satu nama. Lalu putar!</p>
+<section class="stage rise" style="--i:2;text-align:left">
+<textarea class="field" id="names" aria-label="Daftar nama murid">Andi
+Bunga
+Citra
+Dewa
+Eka</textarea>
+<div class="nm" id="pick" style="text-align:center" aria-live="polite">Siapa yang maju?</div>
+<div class="row"><button class="btn" id="spin">Putar!</button>
+<label style="color:var(--mute);font-size:16px"><input type="checkbox" id="norepeat" checked> Jangan ulang nama yang sudah terpilih</label></div>
+</section>
+</main>
+<script src="/art.js"></script>
+<script>const $=id=>document.getElementById(id);let used=[];
+$('names').oninput=()=>used=[];
+function tulis(t){const p=$('pick');p.textContent='';[...t].forEach((c,j)=>{const s=document.createElement('span');s.textContent=c===' '?'\u00a0':c;s.style.setProperty('--k',j);p.appendChild(s)})}
+$('spin').onclick=()=>{
+  const all=$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!all.length){$('pick').textContent='Isi nama dulu';return}
+  let pool=$('norepeat').checked?all.filter(n=>!used.includes(n)):all;
+  if(!pool.length){used=[];pool=all}
+  const win=pool[Math.floor(Math.random()*pool.length)];
+  $('spin').disabled=true;let i=0;
+  const t=setInterval(()=>{
+    $('pick').textContent=all[Math.floor(Math.random()*all.length)];window.HP&&HP.tick();
+    if(++i>18){clearInterval(t);tulis(win);used.push(win);$('spin').disabled=false;window.HP&&(HP.win(),HP.spark($('pick')))}
+  },80);
+};</script>
+<script src="/hive.js" defer></script></body></html>

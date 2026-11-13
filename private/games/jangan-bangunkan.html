@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jangan Bangunkan! · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f4ff;--ink:#1a1b4b;--mute:#5d5f95;--card:rgba(255,255,255,.74);--line:rgba(26,27,75,.1);--shadow:0 24px 50px -24px rgba(70,60,160,.4);
+--b1:#8b7bff;--b2:#ff7ab6;--b3:#ffc14d;--b4:#3fe0c5;--ease:cubic-bezier(.2,.8,.2,1);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0d2e;--ink:#f2f1ff;--mute:#a9abdc;--card:rgba(255,255,255,.08);--line:rgba(255,255,255,.14);--shadow:0 24px 50px -24px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{--bg:#0c0d2e;--ink:#f2f1ff;--mute:#a9abdc;--card:rgba(255,255,255,.08);--line:rgba(255,255,255,.14);--shadow:0 24px 50px -24px rgba(0,0,0,.7)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:18px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+h1,h2,button,.status{font-family:Fredoka,Nunito,system-ui,sans-serif}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--b4);outline-offset:3px}
+
+/* latar: warna berubah mengikuti keadaan anak */
+.mesh{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
+.mesh i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;will-change:transform;transition:background-color 1.4s}
+.mesh .a{width:48vmax;height:48vmax;left:-12vmax;top:-16vmax;background-color:var(--b1);animation:m1 24s ease-in-out infinite alternate}
+.mesh .b{width:40vmax;height:40vmax;right:-10vmax;top:-6vmax;background-color:var(--b2);animation:m2 28s ease-in-out infinite alternate}
+.mesh .c{width:44vmax;height:44vmax;left:20vmax;top:30vmax;background-color:var(--b3);opacity:.34;animation:m3 32s ease-in-out infinite alternate}
+@keyframes m1{to{transform:translate(26vmax,14vmax) scale(1.2)}}
+@keyframes m2{to{transform:translate(-22vmax,18vmax) scale(.85)}}
+@keyframes m3{to{transform:translate(-18vmax,-14vmax) scale(1.25)}}
+body[data-s="sleep"],body[data-s="deep"]{--b1:#6f7bff;--b2:#9a7bff;--b3:#3fb6e0}
+body[data-s="stir"]{--b1:#ffb347;--b2:#ff8fa3;--b3:#ffd25e}
+body[data-s="awake"]{--b1:#ff6b4a;--b2:#ff4d7a;--b3:#ffb347}
+body[data-s="deep"]{--b3:#3fe0c5}
+
+main{max-width:760px;margin:auto;padding:22px 20px 80px}
+h1{margin:0;font-size:clamp(30px,7vw,46px);letter-spacing:-.4px;line-height:1.1;background:linear-gradient(100deg,var(--b1),var(--b2),var(--b3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mute);margin:6px 0 18px}
+.panel{border-radius:32px;border:1px solid var(--line);background:var(--card);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--shadow);padding:18px 20px 22px}
+.stage{text-align:center}
+.kid{width:min(100%,460px);height:auto;display:block;margin:0 auto;overflow:visible}
+.status{font-size:clamp(22px,5.5vw,30px);margin:6px 0 2px;font-weight:700}
+.quiet{color:var(--mute);font-size:17px}
+.lbl{display:flex;justify-content:space-between;color:var(--mute);font-size:16px;margin-top:14px}
+.meter{height:16px;border-radius:99px;background:rgba(127,127,170,.2);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--b4),var(--b1));transition:width .12s linear,background .3s}
+.meter i.hot{background:linear-gradient(90deg,var(--b3),var(--b2))}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.btn{border:0;padding:13px 22px;border-radius:16px;font-size:18px;font-weight:700;cursor:pointer;color:#fff;background:linear-gradient(100deg,var(--b1),var(--b2));transition:transform .3s var(--ease)}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.96)}
+.btn.alt{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;color:var(--mute);font-size:16px}
+.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 15px;border-radius:99px;font-size:16px;cursor:pointer}
+.chips button.on{background:linear-gradient(100deg,var(--b1),var(--b2));color:#fff;border-color:transparent}
+input[type=range]{width:100%;accent-color:var(--b1)}
+input[type=text]{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:12px;font:inherit;width:9em}
+.note{color:var(--mute);font-size:16px;margin:14px 0 0}
+.spk{position:fixed;width:12px;height:12px;border-radius:50%;pointer-events:none;z-index:40;animation:spk .9s var(--ease) forwards}
+@keyframes spk{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+
+/* karakter anak */
+.kid .sl,.kid .st,.kid .aw,.kid .cl,.kid .dp{display:none}
+.kid.sleep .sl,.kid.deep .sl,.kid.stir .st,.kid.awake .aw,.kid.sleep .cl,.kid.deep .cl,.kid.stir .cl,.kid.deep .dp{display:inline}
+.blanket{transform-origin:180px 240px;animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scaleY(1.04)}}
+.kid.stir .blanket{animation:breathe 1.3s ease-in-out infinite}
+.head{transform-origin:180px 165px}
+.kid.sleep .head,.kid.deep .head{animation:headb 4s ease-in-out infinite}
+@keyframes headb{50%{transform:translateY(2px)}}
+.kid.stir .head{animation:toss .9s ease-in-out infinite}
+@keyframes toss{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.kid.awake .head{animation:wake .5s var(--ease) both}
+@keyframes wake{to{transform:translateY(-14px) scale(1.04)}}
+.kid.awake{animation:shake .3s linear infinite}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.hand{transform-box:fill-box}
+.kid.awake .hand{animation:pump .35s ease-in-out infinite alternate}
+@keyframes pump{to{transform:translateY(-24px)}}
+.bubble{transform-box:fill-box;transform-origin:0% 60%;animation:bub 4s ease-in-out infinite}
+@keyframes bub{0%,100%{transform:scale(.45)}50%{transform:scale(1.2)}}
+.tail{transform-origin:214px 52px;animation:sway 5s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(7deg)}}
+.kid.awake .tail{animation:flop .5s ease-out both}
+@keyframes flop{to{transform:rotate(34deg)}}
+.zzz text{font-family:Fredoka,sans-serif;font-weight:700;fill:var(--b1);opacity:0;animation:zf 3.6s ease-in-out infinite}
+.zzz text:nth-child(2){animation-delay:1.2s}.zzz text:nth-child(3){animation-delay:2.4s}
+@keyframes zf{0%{opacity:0;transform:translate(0,12px)}25%{opacity:1}100%{opacity:0;transform:translate(-18px,-26px)}}
+.tw{transform-box:fill-box;transform-origin:center;animation:tw 1.4s ease-in-out infinite}
+@keyframes tw{50%{transform:scale(1.5) rotate(45deg);opacity:.6}}
+.mark{font-family:Fredoka,sans-serif;font-weight:700;font-size:40px;fill:#ff6b4a}
+@media (prefers-reduced-motion:reduce){.kid,.kid *,.mesh i,.spk{animation:none!important}.zzz text{opacity:.9}}
+.back{display:inline-flex;align-items:center;color:var(--ink);text-decoration:none;font-family:Fredoka,sans-serif;font-size:18px;padding:8px 18px;border-radius:99px;background:var(--card);border:1px solid var(--line);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+</style>
+</head>
+<body data-s="sleep">
+<div class="mesh" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+<main>
+  <a class="back" href="/">← Kembali</a>
+  <h1 style="margin-top:14px">Jangan Bangunkan!</h1>
+  <p class="sub">Minta kelas tenang. Kalau terlalu ribut, anak yang sedang tidur ini akan terbangun.</p>
+
+  <section class="panel stage">
+    <svg class="kid sleep" id="kid" viewBox="0 0 360 260" role="img" aria-label="Anak yang sedang tidur di tempat tidur">
+      <defs>
+        <linearGradient id="bl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc14d"/><stop offset="1" stop-color="#ff9a3c"/></linearGradient>
+        <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="3.5" fill="#fff" fill-opacity=".4"/><circle cx="19" cy="19" r="3.5" fill="#fff" fill-opacity=".4"/></pattern>
+      </defs>
+      <ellipse cx="180" cy="248" rx="150" ry="10" fill="#000" opacity=".12"/>
+      <rect x="30" y="44" width="300" height="160" rx="40" fill="#6f5fe8" opacity=".92"/>
+      <rect x="70" y="96" width="220" height="66" rx="33" fill="#f4f1ff"/>
+      <g class="zzz"><text x="96" y="72" font-size="22">z</text><text x="66" y="46" font-size="28">z</text><text x="34" y="20" font-size="34">Z</text></g>
+      <g class="head">
+        <path d="M132 106q-9 14 0 30M228 106q9 14 0 30" stroke="#3a2a3f" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <circle cx="180" cy="114" r="50" fill="#e9b384"/>
+        <path class="tail" d="M214 52Q252 40 264 86" stroke="#7a6bff" stroke-width="16" stroke-linecap="round" fill="none"/>
+        <circle class="tail" cx="264" cy="90" r="9" fill="#fff"/>
+        <path d="M131 98C128 54 160 40 190 42C224 44 234 74 229 98C205 86 156 86 131 98Z" fill="#7a6bff"/>
+        <circle cx="160" cy="64" r="3" fill="#ffe28a"/><circle cx="196" cy="56" r="3" fill="#ffe28a"/><circle cx="214" cy="78" r="3" fill="#ffe28a"/>
+        <rect x="128" y="92" width="104" height="16" rx="8" fill="#efeaff"/>
+        <ellipse cx="148" cy="136" rx="9" ry="6" fill="#ff8fa3" opacity=".6"/><ellipse cx="212" cy="136" rx="9" ry="6" fill="#ff8fa3" opacity=".6"/>
+        <circle cx="180" cy="130" r="3.8" fill="#d39466"/>
+        <g class="cl" fill="none" stroke="#2b2140" stroke-width="4.5" stroke-linecap="round"><path d="M152 120q10 10 20 0M188 120q10 10 20 0"/></g>
+        <g class="st" stroke="#2b2140" stroke-width="4.5" stroke-linecap="round" fill="none"><path d="M150 108l22 7M210 108l-22 7"/><path d="M170 148q10-6 20 0"/></g>
+        <g class="aw"><circle cx="162" cy="120" r="12" fill="#fff"/><circle cx="198" cy="120" r="12" fill="#fff"/><circle cx="163" cy="121" r="6.5" fill="#2b2140"/><circle cx="197" cy="121" r="6.5" fill="#2b2140"/>
+          <path d="M148 100q12-10 24-2M208 98q12-8 24 2" stroke="#2b2140" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="180" cy="148" rx="11" ry="11" fill="#7a2d3a"/><ellipse cx="180" cy="153" rx="6" ry="4.5" fill="#ff8aa0"/></g>
+        <g class="sl"><ellipse cx="180" cy="146" rx="4" ry="5" fill="#7a2d3a"/><circle class="bubble" cx="190" cy="136" r="12" fill="#bfe3ff" fill-opacity=".55" stroke="#fff" stroke-opacity=".8" stroke-width="1.5"/></g>
+      </g>
+      <g class="blanket"><path d="M34 172Q110 150 180 160Q250 150 326 172L326 228Q326 240 314 240H46Q34 240 34 228Z" fill="url(#bl)"/>
+        <path d="M34 172Q110 150 180 160Q250 150 326 172L326 228Q326 240 314 240H46Q34 240 34 228Z" fill="url(#dots)"/>
+        <path d="M34 172Q110 150 180 160Q250 150 326 172" stroke="#fff" stroke-opacity=".65" stroke-width="8" stroke-linecap="round" fill="none"/></g>
+      <g class="aw"><circle class="hand" cx="98" cy="162" r="16" fill="#e9b384"/><circle class="hand" cx="262" cy="162" r="16" fill="#e9b384"/>
+        <text class="mark" x="76" y="96">!</text><text class="mark" x="268" y="90">!</text></g>
+      <g class="dp" fill="#ffe28a"><g transform="translate(82 80)"><path class="tw" d="M0-9L2-2L9 0L2 2L0 9L-2 2L-9 0L-2-2Z"/></g><g transform="translate(284 60)"><path class="tw" style="animation-delay:.5s" d="M0-9L2-2L9 0L2 2L0 9L-2 2L-9 0L-2-2Z"/></g><g transform="translate(300 130)"><path class="tw" style="animation-delay:.9s" d="M0-7L1.6-1.6L7 0L1.6 1.6L0 7L-1.6 1.6L-7 0L-1.6-1.6Z"/></g></g>
+    </svg>
+
+    <div class="status" id="status" aria-live="polite">Tekan tombol mikrofon untuk mulai.</div>
+    <div class="quiet" id="quiet">Waktu tenang: 0 dari 30 detik</div>
+
+    <div class="lbl"><span>Suara kelas</span><span id="db">Hening</span></div>
+    <div class="meter" aria-hidden="true"><i id="vol"></i></div>
+    <div class="lbl"><span>Nyenyaknya tidur</span><span id="pt">100%</span></div>
+    <div class="meter" aria-hidden="true"><i id="pat" style="width:100%"></i></div>
+
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="start">Nyalakan mikrofon</button>
+      <button class="btn alt" id="reset">Tidurkan lagi</button>
+    </div>
+
+    <div class="chips" style="justify-content:center"><span>Misi tenang:</span>
+      <button data-g="15">15 detik</button><button data-g="30" class="on">30 detik</button><button data-g="60">60 detik</button>
+      <label style="margin-left:6px">Nama anak <input type="text" id="nama" value="Bimo" maxlength="14" aria-label="Nama anak"></label>
+    </div>
+
+    <p class="mute" style="margin:16px 0 4px;color:var(--mute)">Kepekaan mikrofon (geser kanan kalau terlalu mudah marah)</p>
+    <input type="range" id="sens" min="1" max="100" value="45" aria-label="Kepekaan mikrofon">
+
+    <div class="row" style="justify-content:center">
+      <button class="btn alt" id="fake">Tahan untuk menguji keributan</button>
+    </div>
+    <p class="note" id="micmsg">Suara tidak direkam dan tidak dikirim ke mana pun. Diproses langsung di browser. Tidak ada musik di game ini supaya mikrofon tidak salah menangkap.</p>
+  </section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+let ac,an,buf,micOn=false,fake=false,pat=100,quiet=0,best=0,goal=30,over=false,wasDeep=false,last=performance.now();
+const kid=$('kid'),COL=['#8b7bff','#ff7ab6','#ffc14d','#3fe0c5'];
+const nama=()=>($('nama').value.trim()||'Si kecil');
+
+function set(s,msg){kid.setAttribute('class','kid '+s);document.body.dataset.s=s;$('status').textContent=msg}
+function burst(){
+  const r=kid.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.4;
+  for(let q=0;q<14;q++){const s=document.createElement('i');s.className='spk';const a=q/14*6.283,d=90+Math.random()*70;
+    s.style.cssText=`left:${cx-6}px;top:${cy-6}px;background:${COL[q%4]};--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px`;
+    document.body.appendChild(s);setTimeout(()=>s.remove(),1000)}
+}
+function wakeSound(){
+  try{ if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
+    [[420,0],[300,.16]].forEach(([f,d])=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+d;
+      o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.25,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.4);
+      o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.45)});
+  }catch(e){}
+}
+async function startMic(){
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    const src=ac.createMediaStreamSource(st);an=ac.createAnalyser();an.fftSize=1024;src.connect(an);buf=new Uint8Array(an.fftSize);
+    micOn=true;$('start').textContent='Mikrofon menyala';
+    $('micmsg').textContent='Mikrofon aktif. Minta kelas tenang…';
+  }catch(e){
+    $('micmsg').textContent='Mikrofon tidak bisa diakses. Izinkan akses mikrofon di browser, atau buka halaman ini langsung di tab baru. Sementara itu kamu bisa mencoba lewat tombol uji keributan.';
+  }
+}
+function level(){
+  if(fake)return .9;
+  if(!micOn)return 0;
+  an.getByteTimeDomainData(buf);let s=0;for(const v of buf){const x=(v-128)/128;s+=x*x}
+  return Math.min(1,Math.sqrt(s/buf.length)*6);
+}
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min(.25,(now-last)/1000);last=now;
+  const lv=level(),limit=.08+($('sens').value/100)*.5,loud=lv>limit;
+  $('vol').style.width=(lv*100)+'%';$('vol').className=loud?'hot':'';
+  $('db').textContent=lv<.03?'Hening':loud?'Terlalu ribut':'Tenang';
+  if(over)return;
+  if(loud){pat-=dt*(25+lv*40);quiet=0}else{pat=Math.min(100,pat+dt*8);quiet+=dt}
+  pat=Math.max(0,pat);best=Math.max(best,quiet);
+  $('pat').style.width=pat+'%';$('pt').textContent=Math.round(pat)+'%';
+  $('quiet').textContent='Waktu tenang: '+Math.floor(quiet)+' dari '+goal+' detik · terbaik '+Math.floor(best)+' detik';
+  const n=nama();
+  if(pat<=0){over=true;set('awake',n+' bangun! Kelas terlalu ribut.');wakeSound();wasDeep=false;return}
+  if(pat<55){set('stir',n+' mulai terganggu… pelan-pelan ya!');wasDeep=false}
+  else if(quiet>=goal){set('deep','Misi berhasil! '+n+' bermimpi indah.');if(!wasDeep){wasDeep=true;burst()}}
+  else{set('sleep','Shh… '+n+' tidur nyenyak.');wasDeep=false}
+}
+$('start').onclick=()=>{if(!micOn)startMic()};
+$('reset').onclick=()=>{pat=100;quiet=0;over=false;wasDeep=false;set('sleep','Shh… '+nama()+' tidur lagi.')};
+document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{goal=+b.dataset.g;wasDeep=false;document.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('on',x===b))});
+const f=$('fake');['pointerdown'].forEach(e=>f.addEventListener(e,()=>fake=true));['pointerup','pointerleave','pointercancel'].forEach(e=>f.addEventListener(e,()=>fake=false));
+f.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){fake=true;setTimeout(()=>fake=false,700)}});
+set('sleep','Shh… '+nama()+' tidur nyenyak. Tekan mikrofon untuk mulai.');
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

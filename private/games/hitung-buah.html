@@ -1,23 +1,35 @@
 <!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hitung Buah</title><link rel="stylesheet" href="../style.css"></head>
-<body><div class="top"><a href="/">← Kembali</a></div>
-<div class="wrap"><h1>Ada berapa?</h1>
-<div id="b" style="font-size:clamp(44px,12vw,80px);line-height:1.3;min-height:2.6em"></div>
-<div class="opts" id="o"></div><div class="msg" id="m"></div>
-<p id="s" style="color:var(--mute)"></p></div>
-<script>
-const E=["🍎","🍌","🍓","🍊","🍇"];let n=0,skor=0,ronde=0;
-function bicara(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="id-ID";speechSynthesis.speak(u)}catch(e){}}
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hitung Buah · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css"></head><body>
+<div class="top"><a class="back" href="/">← Kembali</a></div>
+<main>
+<h1 class="rise">Ada berapa?</h1>
+<p class="sub rise" style="--i:1">Hitung buahnya, lalu pilih angka yang benar.</p>
+<section class="stage rise" style="--i:2"><div class="fruits" id="b"></div><div class="opts" id="o"></div><div class="msg" id="m" aria-live="polite"></div><div class="stars" id="s" aria-label="Bintang"></div></section>
+</main>
+<script src="/art.js"></script>
+<script>const K=['apple','banana','strawberry','orange','grape'];let n=0;
+const b=document.getElementById('b'),o=document.getElementById('o'),m=document.getElementById('m'),s=document.getElementById('s');
 function baru(){
-  n=1+Math.floor(Math.random()*10);const e=E[Math.floor(Math.random()*E.length)];
-  b.textContent=e.repeat(n);m.textContent="";
-  let p=new Set([n]);while(p.size<3)p.add(1+Math.floor(Math.random()*10));
-  o.innerHTML="";[...p].sort(()=>Math.random()-.5).forEach(v=>{
-    const x=document.createElement("button");x.className="opt";x.textContent=v;
-    x.onclick=()=>{ronde++;if(v===n){skor++;m.textContent="⭐ Pintar! "+n;bicara(String(n));setTimeout(baru,1300)}else{m.textContent="Coba lagi ya 🙂";x.style.opacity=.3}};
+  n=1+Math.floor(Math.random()*10);const k=K[Math.floor(Math.random()*K.length)];
+  b.className='fruits';b.innerHTML=Array.from({length:n},(_,i)=>ART[k].replace('<svg','<svg style="--i:'+i+'"')).join('');
+  m.textContent='';
+  const p=new Set([n]);while(p.size<3)p.add(1+Math.floor(Math.random()*10));
+  o.innerHTML='';[...p].sort(()=>Math.random()-.5).forEach((v,i)=>{
+    const x=document.createElement('button');x.className='opt';x.textContent=v;x.style.setProperty('--i',i);
+    x.onclick=()=>{
+      if(v===n){
+        window.HP&&(HP.ok(),HP.say(String(n)));b.className='fruits hore';m.textContent='Pintar! '+n;
+        [...o.children].forEach(c=>c.disabled=true);x.classList.add('benar');
+        s.insertAdjacentHTML('beforeend',ART.star);setTimeout(baru,1700);
+      }else{
+        window.HP&&HP.no();m.textContent='Coba lagi ya';x.style.opacity=.35;
+        x.classList.remove('salah');void x.offsetWidth;x.classList.add('salah');
+      }
+    };
     o.appendChild(x)});
-  s.textContent="Bintang: "+skor;
 }
-baru();
-</script></body></html>
+baru();</script>
+<script src="/hive.js" defer></script></body></html>

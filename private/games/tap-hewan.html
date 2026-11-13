@@ -1,12 +1,26 @@
 <!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tap Hewan</title><link rel="stylesheet" href="../style.css"></head>
-<body><div class="top"><a href="/">← Kembali</a></div>
-<div class="wrap"><h1>Tap Hewan</h1>
-<div class="opts" id="a"></div><div class="msg" id="m"></div></div>
-<script>
-const H=[["🐶","Anjing"],["🐱","Kucing"],["🐮","Sapi"],["🐔","Ayam"],["🐸","Katak"],["🐘","Gajah"]];
-function bicara(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="id-ID";u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
-H.forEach(([e,n])=>{const b=document.createElement("button");b.className="big";b.textContent=e;b.setAttribute("aria-label",n);
- b.onclick=()=>{b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");m.textContent=n;bicara(n)};a.appendChild(b)});
-</script></body></html>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tap Hewan · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css"></head><body>
+<div class="top"><a class="back" href="/">← Kembali</a></div>
+<main>
+<h1 class="rise">Tap Hewan</h1>
+<p class="sub rise" style="--i:1">Sentuh hewannya, dengarkan namanya!</p>
+<section class="stage rise" style="--i:2"><div class="zoo" id="zoo"></div><div class="nm" id="nm" aria-live="polite"></div></section>
+</main>
+<script src="/art.js"></script>
+<script>const ZOO=[['dog','Anjing'],['cat','Kucing'],['cow','Sapi'],['frog','Katak']];
+const nm=document.getElementById('nm'),zoo=document.getElementById('zoo');
+ZOO.forEach(([k,n],i)=>{
+  const b=document.createElement('button');b.className='tile';b.setAttribute('aria-label',n);b.innerHTML=ART[k];
+  b.querySelector('.pet').style.setProperty('--i',i);
+  b.onanimationend=e=>{if(e.animationName==='squash')b.classList.remove('tap')};
+  b.onclick=()=>{
+    b.classList.remove('tap');void b.offsetWidth;b.classList.add('tap');
+    nm.textContent='';[...n].forEach((c,j)=>{const s=document.createElement('span');s.textContent=c;s.style.setProperty('--k',j);nm.appendChild(s)});
+    if(window.HP){HP.pop();HP.say(n);HP.spark(b)}
+  };
+  zoo.appendChild(b);
+});</script>
+<script src="/hive.js" defer></script></body></html>
