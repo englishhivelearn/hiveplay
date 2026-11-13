@@ -1,4 +1,3 @@
-
 :root{--bg:#f5f4ff;--ink:#1a1b4b;--mute:#5d5f95;--card:rgba(255,255,255,.7);--line:rgba(26,27,75,.09);--shadow:0 24px 50px -24px rgba(70,60,160,.4);
 --b1:#8b7bff;--b2:#ff7ab6;--b3:#ffc14d;--b4:#3fe0c5;--ease:cubic-bezier(.2,.8,.2,1);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -138,3 +137,6 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--b4);outline-offset:
 @keyframes hpfall{to{transform:translateY(112vh) rotate(540deg)}}
 .hexlogo{width:48px;height:48px;filter:drop-shadow(0 6px 10px rgba(255,150,60,.35))}
 @media (prefers-reduced-motion:reduce){.hp-conf{animation-duration:.01s}}
+
+.done-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.done-list span{padding:5px 14px;border-radius:99px;background:var(--tile);box-shadow:inset 0 0 0 1px var(--line);font-size:16px;color:var(--mute);animation:masuk .4s var(--ease) both}

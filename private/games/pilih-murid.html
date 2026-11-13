@@ -6,32 +6,54 @@
 <div class="top"><a class="back" href="/">← Kembali</a></div>
 <main>
 <h1 class="rise">Pilih Murid</h1>
-<p class="sub rise" style="--i:1">Tulis nama murid, satu baris satu nama. Lalu putar!</p>
+<p class="sub rise" style="--i:1">Tulis nama murid, satu baris satu nama. Nama yang sudah terpilih otomatis keluar dari daftar.</p>
 <section class="stage rise" style="--i:2;text-align:left">
 <textarea class="field" id="names" aria-label="Daftar nama murid">Andi
 Bunga
 Citra
 Dewa
 Eka</textarea>
+<div class="hint" id="sisa" style="text-align:center;margin:10px 0 0"></div>
 <div class="nm" id="pick" style="text-align:center" aria-live="polite">Siapa yang maju?</div>
-<div class="row"><button class="btn" id="spin">Putar!</button>
-<label style="color:var(--mute);font-size:16px"><input type="checkbox" id="norepeat" checked> Jangan ulang nama yang sudah terpilih</label></div>
+<div class="row"><button class="btn" id="spin">Putar!</button><button class="btn alt" id="back" hidden>Kembalikan semua nama</button></div>
+<div class="row" style="margin-top:10px"><label style="color:var(--mute);font-size:16px"><input type="checkbox" id="norepeat" checked> Keluarkan nama yang sudah terpilih dari daftar</label></div>
+<div class="done-list" id="done" aria-label="Murid yang sudah maju"></div>
 </section>
 </main>
 <script src="/art.js"></script>
-<script>const $=id=>document.getElementById(id);let used=[];
-$('names').oninput=()=>used=[];
-function tulis(t){const p=$('pick');p.textContent='';[...t].forEach((c,j)=>{const s=document.createElement('span');s.textContent=c===' '?'\u00a0':c;s.style.setProperty('--k',j);p.appendChild(s)})}
+<script>const $=id=>document.getElementById(id);
+let sudah=[];
+const baca=()=>$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+function tulis(t){const p=$('pick');p.textContent='';[...t].forEach((c,j)=>{const x=document.createElement('span');x.textContent=c===' '?'\u00a0':c;x.style.setProperty('--k',j);p.appendChild(x)})}
+function segarkan(){
+  const sisa=baca().length;
+  $('sisa').textContent='Sisa di daftar: '+sisa+' murid';
+  $('back').hidden=!sudah.length;
+  $('done').innerHTML=sudah.length?'<span style="background:none;box-shadow:none">Sudah maju:</span>'+sudah.map(n=>'<span></span>').join(''):'';
+  [...$('done').querySelectorAll('span')].slice(1).forEach((el,i)=>el.textContent=sudah[i]);
+}
+$('names').oninput=segarkan;
+$('back').onclick=()=>{
+  $('names').value=baca().concat(sudah).join('\n');
+  sudah=[];$('pick').textContent='Siapa yang maju?';segarkan();
+};
 $('spin').onclick=()=>{
-  const all=$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if(!all.length){$('pick').textContent='Isi nama dulu';return}
-  let pool=$('norepeat').checked?all.filter(n=>!used.includes(n)):all;
-  if(!pool.length){used=[];pool=all}
-  const win=pool[Math.floor(Math.random()*pool.length)];
-  $('spin').disabled=true;let i=0;
+  const all=baca();
+  if(!all.length){$('pick').textContent=sudah.length?'Semua sudah maju!':'Isi nama dulu';return}
+  const win=all[Math.floor(Math.random()*all.length)];
+  $('spin').disabled=true;$('names').disabled=true;let i=0;
   const t=setInterval(()=>{
     $('pick').textContent=all[Math.floor(Math.random()*all.length)];window.HP&&HP.tick();
-    if(++i>18){clearInterval(t);tulis(win);used.push(win);$('spin').disabled=false;window.HP&&(HP.win(),HP.spark($('pick')))}
+    if(++i>18){
+      clearInterval(t);tulis(win);
+      if($('norepeat').checked){
+        const k=all.indexOf(win);all.splice(k,1);
+        $('names').value=all.join('\n');sudah.push(win);
+      }
+      $('spin').disabled=false;$('names').disabled=false;segarkan();
+      window.HP&&(HP.win(),HP.spark($('pick')));
+    }
   },80);
-};</script>
+};
+segarkan();</script>
 <script src="/hive.js" defer></script></body></html>
