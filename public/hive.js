@@ -92,7 +92,7 @@
       o.type = 'sine'; o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(900, t + 0.12);
       g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
       o.connect(g); g.connect(sfxBus); o.start(t); o.stop(t + 0.2); }),
-    tick: play((t) => tone(sfxBus, 1100, t, 0.05, 'square', 0.07)),
+    tick(f) { play((t) => tone(sfxBus, f || 1100, t, 0.05, 'square', 0.07))(); },
     flip: play((t) => tone(sfxBus, 520, t, 0.12, 'triangle', 0.22)),
     match: play((t) => [659.25, 880].forEach((f, i) => tone(sfxBus, f, t + i * 0.1, 0.3, 'triangle', 0.3))),
     ok() { play((t) => [523.25, 659.25, 783.99].forEach((f, i) => tone(sfxBus, f, t + i * 0.09, 0.35, 'triangle', 0.3)))(); if (on) burst(); },

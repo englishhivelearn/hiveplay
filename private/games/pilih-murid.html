@@ -6,7 +6,7 @@
 <div class="top"><a class="back" href="/">← Kembali</a></div>
 <main>
 <h1 class="rise">Pilih Murid</h1>
-<p class="sub rise" style="--i:1">Tulis nama murid, satu baris satu nama. Nama yang sudah terpilih otomatis keluar dari daftar.</p>
+<p class="sub rise" style="--i:1">Tulis nama murid, satu baris satu nama. Pilih lewat roda putar atau balap bebek. Yang terpilih otomatis keluar dari daftar.</p>
 <section class="stage rise" style="--i:2;text-align:left">
 <textarea class="field" id="names" aria-label="Daftar nama murid">Andi
 Bunga
@@ -14,46 +14,206 @@ Citra
 Dewa
 Eka</textarea>
 <div class="hint" id="sisa" style="text-align:center;margin:10px 0 0"></div>
+<div class="chips" style="justify-content:center;margin:10px 0 0">
+  <button data-m="roda" class="on">Roda Putar</button><button data-m="bebek">Balap Bebek</button>
+</div>
+<div id="wrapBebek" hidden><div class="komentar" id="komentar" aria-live="polite"></div><div class="pond" id="pond"></div></div>
+<div id="wrapRoda"><div class="wheelbox"><div class="pointer"></div><div id="wheel"></div></div></div>
+<div class="hint" id="info" style="text-align:center;margin:8px 0 0;font-size:15px"></div>
 <div class="nm" id="pick" style="text-align:center" aria-live="polite">Siapa yang maju?</div>
-<div class="row"><button class="btn" id="spin">Putar!</button><button class="btn alt" id="back" hidden>Kembalikan semua nama</button></div>
+<div class="row"><button class="btn" id="spin">Putar roda!</button><button class="btn alt" id="back" hidden>Kembalikan semua nama</button></div>
 <div class="row" style="margin-top:10px"><label style="color:var(--mute);font-size:16px"><input type="checkbox" id="norepeat" checked> Keluarkan nama yang sudah terpilih dari daftar</label></div>
 <div class="done-list" id="done" aria-label="Murid yang sudah maju"></div>
 </section>
 </main>
 <script src="/art.js"></script>
 <script>const $=id=>document.getElementById(id);
-let sudah=[];
+let sudah=[],busy=false,mode='roda',rot=0;
+const MAXB=10,MAXR=16;
+const PASTEL=['#c9c3ff','#ffc2dc','#ffe29a','#a8f0e3'];
 const baca=()=>$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+const acak=(a,n)=>{const c=a.slice();for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]]}return c.slice(0,n)};
+const pot=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
 function tulis(t){const p=$('pick');p.textContent='';[...t].forEach((c,j)=>{const x=document.createElement('span');x.textContent=c===' '?'\u00a0':c;x.style.setProperty('--k',j);p.appendChild(x)})}
+
 function segarkan(){
-  const sisa=baca().length;
-  $('sisa').textContent='Sisa di daftar: '+sisa+' murid';
+  $('sisa').textContent='Sisa di daftar: '+baca().length+' murid';
   $('back').hidden=!sudah.length;
-  $('done').innerHTML=sudah.length?'<span style="background:none;box-shadow:none">Sudah maju:</span>'+sudah.map(n=>'<span></span>').join(''):'';
-  [...$('done').querySelectorAll('span')].slice(1).forEach((el,i)=>el.textContent=sudah[i]);
+  const d=$('done');d.textContent='';
+  if(sudah.length){const l=document.createElement('span');l.textContent='Sudah maju:';l.style.cssText='background:none;box-shadow:none';d.appendChild(l);
+    sudah.forEach(n=>{const x=document.createElement('span');x.textContent=n;d.appendChild(x)})}
 }
-$('names').oninput=segarkan;
-$('back').onclick=()=>{
-  $('names').value=baca().concat(sudah).join('\n');
-  sudah=[];$('pick').textContent='Siapa yang maju?';segarkan();
-};
-$('spin').onclick=()=>{
+
+/* ----- arena bebek ----- */
+const PAL=[['#ffd54a','#f2b21f'],['#ff9ec7','#f06aa4'],['#7fe3c5','#3cc0a0'],['#b9a4ff','#8b73f0'],['#8fd0ff','#52a8ee'],['#ffb347','#f08a1a'],['#c5e86c','#9ccc3a'],['#ff8a80','#ee5c52'],['#ffffff','#d9dfff'],['#ffcba4','#f0a070']];
+const K=2.8,ANCH=.30,CAMSTOP=.78;
+const CROWN='<svg viewBox="0 0 40 28"><path d="M4 24L2 6l10 8L20 2l8 12 10-8-2 18z" fill="#ffd54a" stroke="#f2a31f" stroke-width="2" stroke-linejoin="round"/></svg>';
+const duckSvg=(b,w)=>'<svg viewBox="0 0 90 64" aria-hidden="true"><g><path class="fa" d="M40 50l-3 11h10z" fill="#ff8a2a"/><path class="fb" d="M52 50l-3 11h10z" fill="#ff8a2a"/></g><path d="M18 36Q4 32 6 16Q18 22 26 30Z" fill="'+b+'"/><ellipse cx="42" cy="38" rx="28" ry="17" fill="'+b+'"/><ellipse cx="38" cy="40" rx="15" ry="9" fill="'+w+'" transform="rotate(12 38 40)"/><circle cx="66" cy="22" r="14" fill="'+b+'"/><path d="M62 8Q58 1 66 3Q63 7 67 9Z" fill="'+b+'"/><ellipse cx="62" cy="27" rx="4" ry="2.6" fill="#ff8fa3" opacity=".6"/><circle class="eye" cx="70" cy="21" r="3.4" fill="#2b2140"/><circle cx="71.2" cy="19.8" r="1.1" fill="#fff"/><path d="M78 20L90 25Q82 31 78 28Z" fill="#ff8a2a"/><path class="wv" d="M0 44Q11 39 22 44T44 44T66 44T88 44T110 44V64H0Z" fill="#3b9be0" fill-opacity=".55"/></svg>';
+function bangunKolam(list){
+  const pd=$('pond'),n=list.length,lh=n<=3?100:n<=5?88:n<=7?76:n<=9?66:60;
+  pd.className='pond arena';pd.style.setProperty('--lh',lh+'px');pd.style.setProperty('--cam','0px');pd.textContent='';
+  const mk=c=>{const e=document.createElement('div');e.className=c;return e};
+  ['bgwave w1','bgwave w2','bgdeco'].forEach(c=>pd.appendChild(mk(c)));
+  const sl=mk('startline');sl.innerHTML='<b>START</b>';pd.appendChild(sl);
+  const fl=mk('finishline');fl.innerHTML='<b>FINISH</b>';pd.appendChild(fl);
+  list.forEach((nm,i)=>{
+    const lane=mk('lane'),d=mk('duck'),pl=PAL[i%PAL.length];
+    d.style.setProperty('--d',i);d.style.setProperty('--c',pl[0]);
+    d.innerHTML='<div class="tag"></div><div class="zz">z</div><div class="sweat"></div><div class="wake"><i></i><i></i></div><div class="flip"><div class="body">'+duckSvg(pl[0],pl[1])+'</div></div><div class="lines"><i></i><i></i><i></i></div><div class="crown">'+CROWN+'</div>';
+    d.querySelector('.tag').textContent=nm;
+    lane.appendChild(d);pd.appendChild(lane);
+  });
+  const cd=mk('countdown');cd.id='cdown';pd.appendChild(cd);
+  mapper(pd)(0,list.map(()=>0));
+}
+/* kamera: dunia bebek (0 sampai 1) -> posisi layar. Latar bergeser mengikuti kamera. */
+function mapper(pd){
+  const W=pd.clientWidth||600,ducks=[...pd.querySelectorAll('.duck')],dw=(ducks[0]&&ducks[0].offsetWidth)||48,
+        sl=pd.querySelector('.startline'),fl=pd.querySelector('.finishline');
+  return (cam,ps)=>{
+    pd.style.setProperty('--cam',(-cam*K*W).toFixed(1)+'px');
+    sl.style.transform='translateX('+(ANCH*W-cam*K*W).toFixed(1)+'px)';
+    fl.style.transform='translateX('+(ANCH*W+(1-cam)*K*W).toFixed(1)+'px)';
+    ducks.forEach((d,i)=>{d.style.transform='translateX('+Math.max(4,ANCH*W+(ps[i]-cam)*K*W-dw/2).toFixed(1)+'px)'});
+  };
+}
+/* ----- roda ----- */
+function bangunRoda(list){
+  rot=0;const n=list.length,R=150,C=160;
+  if(!n){$('wheel').textContent='';return}
+  const s=360/n,pt=(a,r)=>[C+r*Math.cos(a*Math.PI/180),C+r*Math.sin(a*Math.PI/180)];
+  let g='';
+  list.forEach((nm,i)=>{
+    const a0=i*s-90,a1=a0+s,mid=a0+s/2,c=PASTEL[i%4];
+    if(n===1)g+='<circle cx="160" cy="160" r="150" fill="'+c+'"/>';
+    else{const [x0,y0]=pt(a0,R),[x1,y1]=pt(a1,R);g+='<path d="M160 160L'+x0.toFixed(1)+' '+y0.toFixed(1)+'A150 150 0 '+(s>180?1:0)+' 1 '+x1.toFixed(1)+' '+y1.toFixed(1)+'Z" fill="'+c+'" stroke="#fff" stroke-width="2"/>'}
+    g+='<text data-i="'+i+'" transform="translate(160 160) rotate('+mid.toFixed(1)+')" x="136" y="5" text-anchor="end" font-family="Fredoka,sans-serif" font-weight="700" font-size="'+(n<=8?19:n<=12?15:12)+'" fill="#1a1b4b"></text>';
+  });
+  $('wheel').innerHTML='<svg id="wsvg" viewBox="0 0 320 320" role="img" aria-label="Roda nama murid"><circle cx="160" cy="160" r="154" fill="#fff" opacity=".6"/>'+g+'<circle cx="160" cy="160" r="20" fill="#fff" stroke="#8b7bff" stroke-width="5"/></svg>';
+  $('wheel').querySelectorAll('text').forEach(t=>t.textContent=pot(list[+t.dataset.i],11));
+}
+function pratinjau(){
+  if(busy)return;
+  const all=baca();
+  if(mode==='bebek'){$('wrapBebek').hidden=!all.length;if(all.length)bangunKolam(all.slice(0,MAXB));else $('pond').textContent=''}
+  else bangunRoda(all.slice(0,MAXR));
+  const maks=mode==='bebek'?MAXB:MAXR;
+  $('info').textContent=all.length>maks?('Maksimal '+maks+' peserta per putaran. '+maks+' nama akan diambil secara acak dari '+all.length+' nama.'):'';
+}
+function kunci(b){busy=b;$('spin').disabled=b;$('names').disabled=b;document.querySelectorAll('[data-m]').forEach(x=>x.disabled=b)}
+function selesai(win){
+  tulis(win);
+  if($('norepeat').checked){const all=baca(),k=all.indexOf(win);if(k>-1)all.splice(k,1);$('names').value=all.join('\n');sudah.push(win)}
+  kunci(false);segarkan();
+  window.HP&&(HP.win(),HP.spark($('pick')));
+}
+
+function mulai(){
   const all=baca();
   if(!all.length){$('pick').textContent=sudah.length?'Semua sudah maju!':'Isi nama dulu';return}
-  const win=all[Math.floor(Math.random()*all.length)];
-  $('spin').disabled=true;$('names').disabled=true;let i=0;
-  const t=setInterval(()=>{
-    $('pick').textContent=all[Math.floor(Math.random()*all.length)];window.HP&&HP.tick();
-    if(++i>18){
-      clearInterval(t);tulis(win);
-      if($('norepeat').checked){
-        const k=all.indexOf(win);all.splice(k,1);
-        $('names').value=all.join('\n');sudah.push(win);
-      }
-      $('spin').disabled=false;$('names').disabled=false;segarkan();
-      window.HP&&(HP.win(),HP.spark($('pick')));
+  kunci(true);
+  mode==='bebek'?balap(all):putar(all);
+}
+function balap(all){
+  const peserta=acak(all,MAXB);$('wrapBebek').hidden=false;bangunKolam(peserta);
+  $('info').textContent=all.length>MAXB?('Peserta: '+MAXB+' nama acak dari '+all.length):'';
+  const pd=$('pond'),ducks=[...pd.querySelectorAll('.duck')],lanes=[...pd.querySelectorAll('.lane')],kom=$('komentar'),cd=$('cdown'),pos=mapper(pd),n=peserta.length;
+  if(pd.scrollIntoView)pd.scrollIntoView({block:'center',behavior:'smooth'});
+  kom.textContent='Bersiap…';
+  const hitung=['3','2','1','GO!'];let h=0;
+  const tampil=()=>{cd.textContent=hitung[h];cd.classList.remove('pop');void cd.offsetWidth;cd.classList.add('pop');window.HP&&(h<3?HP.tick(700+h*200):HP.pop())};
+  tampil();
+  const iv=setInterval(()=>{h++;if(h>=hitung.length){clearInterval(iv);cd.textContent='';kom.textContent='';start();return}tampil()},700);
+
+  function start(){
+    pd.classList.add('racing');
+    const S=peserta.map(()=>({p:0,base:.036+Math.random()*.010,cur:1,tg:1,t:0,mode:''}));
+    const MODE=['sprint','turbo','slow','nap','back'];
+    /* gerakan tak terduga: ngebut, turbo, melambat, ketiduran, salah arah */
+    function acara(s,akhir){
+      const r=Math.random(),ps=akhir?.34:.2;
+      if(s.mode==='nap'&&Math.random()<.55){s.mode='sprint';s.tg=3.2+Math.random()*1.6;s.t=.6+Math.random()*.6;return 'kaget'}
+      if(r<ps){s.mode='sprint';s.tg=2+Math.random()*2;s.t=.5+Math.random()*.9;return 'ngebut'}
+      if(r<ps+.04){s.mode='sprint turbo';s.tg=4.5+Math.random()*1.5;s.t=.4+Math.random()*.4;return 'turbo'}
+      if(r<ps+.24){s.mode='slow';s.tg=.12+Math.random()*.3;s.t=.6+Math.random()*1.2;return ''}
+      if(r<ps+.29){s.mode='nap';s.tg=.02;s.t=.9+Math.random()*.8;return 'nap'}
+      if(r<ps+.33){s.mode='back';s.tg=-.35;s.t=.5+Math.random()*.4;return 'back'}
+      s.mode='';s.tg=.8+Math.random()*.4;s.t=.5+Math.random()*1;return '';
     }
-  },80);
-};
-segarkan();</script>
+    let cam=0,last=performance.now(),lastMsg=0,lead=-1,selesaiLomba=false,sudahAkhir=false;
+    const ucap=t=>{const now=performance.now();if(now-lastMsg<1700)return;kom.textContent=t;lastMsg=now};
+    (function f(now){
+      if(selesaiLomba)return;
+      let dt=Math.min(.05,(now-last)/1000);last=now;
+      const L=Math.max(...S.map(s=>s.p)),akhir=L>CAMSTOP;
+      if(akhir&&!sudahAkhir){sudahAkhir=true;ucap('Garis finis sudah dekat!')}
+      dt*=L>.95?.55:1;                       /* gerak lambat menjelang finis */
+      const avg=S.reduce((a,s)=>a+s.p,0)/n;
+      S.forEach((s,i)=>{
+        s.t-=dt;
+        if(s.t<=0){
+          const m=acara(s,akhir),nm=peserta[i];
+          MODE.forEach(c=>ducks[i].classList.toggle(c,(' '+s.mode+' ').includes(' '+c+' ')));
+          if(m)ucap({ngebut:nm+' ngebut!',turbo:nm+' pakai turbo!!',nap:nm+' ketiduran…',back:nm+' salah arah!',kaget:nm+' kaget lalu ngebut!'}[m]);
+        }
+        s.cur+=(s.tg-s.cur)*Math.min(1,dt*9);
+        const rb=Math.min(1.45,Math.max(.72,1+(avg-s.p)*5));   /* menjaga rombongan tetap rapat, supaya salip-salipan */
+        const v=s.base*s.cur*rb*(akhir?1.18:1);
+        s.p=Math.max(0,s.p+v*dt);
+        ducks[i].style.setProperty('--sp',Math.max(0,Math.min(1,v/.14)).toFixed(2));
+      });
+      const L2=Math.max(...S.map(s=>s.p)),li=S.findIndex(s=>s.p===L2);
+      cam+=(Math.min(L2,CAMSTOP)-cam)*Math.min(1,dt*4);   /* kamera berhenti di CAMSTOP, bebek baru maju ke garis finis */
+      pos(cam,S.map(s=>s.p));
+      if(li!==lead){lead=li;ducks.forEach((d,i)=>d.classList.toggle('lead',i===li));if(!akhir)ucap(peserta[li]+' memimpin!')}
+      if(L2>=1){
+        selesaiLomba=true;pd.classList.remove('racing');pd.classList.add('done');
+        MODE.forEach(c=>ducks[li].classList.remove(c));
+        lanes[li].classList.add('win');ducks[li].classList.add('win');
+        kom.textContent=peserta[li]+' juara!';
+        selesai(peserta[li]);return;
+      }
+      requestAnimationFrame(f);
+    })(performance.now());
+  }
+}
+function putar(all){
+  const peserta=acak(all,MAXR);bangunRoda(peserta);
+  $('info').textContent=all.length>MAXR?('Peserta: '+MAXR+' nama acak dari '+all.length):'';
+  $('pick').textContent='Berputar…';
+  const n=peserta.length,s=360/n,w=Math.floor(Math.random()*n),mid=w*s+s/2,jit=(Math.random()-.5)*s*.8; /* berhenti dekat batas irisan: hampir meleset */
+  const kurang=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,dur=kurang?1.2:10;
+  const need=(((-mid+jit-rot)%360)+360)%360,target=rot+360*(9+Math.floor(Math.random()*3))+need;
+  const sv=$('wsvg'),box=$('wheel').parentNode,ptr=box.querySelector('.pointer');
+  const sudut=()=>{const m=getComputedStyle(sv).transform.match(/matrix\(([^)]+)\)/);if(!m)return 0;const v=m[1].split(',').map(Number);return Math.atan2(v[1],v[0])*180/Math.PI};
+  let prev=sudut(),total=0,cnt=0,lastTick=0,ended=false;const t0=performance.now();
+  sv.style.transition='transform '+dur+'s cubic-bezier(.15,.6,.08,1)';
+  sv.getBoundingClientRect();sv.style.transform='rotate('+target+'deg)';rot=target;
+  (function f(now){
+    if(ended)return;
+    const a=sudut();let d=a-prev;d=((d+540)%360)-180;total+=d;prev=a;
+    const k=Math.floor(total/s);
+    if(k!==cnt){cnt=k;if(now-lastTick>45){lastTick=now;
+      window.HP&&HP.tick(600+Math.min(Math.abs(d)*60,1500)/1500*700);
+      ptr.classList.remove('flick');void ptr.offsetWidth;ptr.classList.add('flick')}}
+    const sisa=1-(now-t0)/(dur*1000);
+    box.classList.toggle('tegang',sisa<.3);
+    if(sisa<.28&&$('pick').textContent==='Berputar…')$('pick').textContent='Siapa ya…?';
+    requestAnimationFrame(f);
+  })(t0);
+  const fin=()=>{if(ended)return;ended=true;box.classList.remove('tegang');
+    $('pick').textContent='Dan yang terpilih adalah…';
+    setTimeout(()=>selesai(peserta[w]),1100)};
+  sv.addEventListener('transitionend',fin,{once:true});setTimeout(fin,dur*1000+400);
+}
+
+$('names').oninput=()=>{segarkan();pratinjau()};
+$('spin').onclick=mulai;
+$('back').onclick=()=>{$('names').value=baca().concat(sudah).join('\n');sudah=[];$('pick').textContent='Siapa yang maju?';segarkan();pratinjau()};
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{
+  mode=b.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===b));
+  $('wrapBebek').hidden=mode!=='bebek';$('wrapRoda').hidden=mode!=='roda';
+  $('spin').textContent=mode==='bebek'?'Mulai balapan!':'Putar roda!';pratinjau();
+});
+segarkan();pratinjau();</script>
 <script src="/hive.js" defer></script></body></html>
