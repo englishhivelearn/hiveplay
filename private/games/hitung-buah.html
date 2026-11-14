@@ -1,19 +1,20 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hitung Buah · Hive Play</title>
+<title>Count the Fruits · Hive Play</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/hive.css"></head><body>
-<div class="top"><a class="back" href="/">← Kembali</a></div>
+<div class="top"><a class="back" href="/">← Back</a></div>
 <main>
-<h1 class="rise">Ada berapa?</h1>
-<p class="sub rise" style="--i:1">Hitung buahnya, lalu pilih angka yang benar.</p>
-<section class="stage rise" style="--i:2"><div class="fruits" id="b"></div><div class="opts" id="o"></div><div class="msg" id="m" aria-live="polite"></div><div class="stars" id="s" aria-label="Bintang"></div></section>
-</main>
+<h1 class="rise">How many?</h1>
+<p class="sub rise" style="--i:1">Count the fruits, then pick the right number.</p>
+<section class="stage rise" style="--i:2"><div class="fruits" id="b"></div><div class="opts" id="o"></div><div class="msg" id="m" aria-live="polite"></div><div class="stars" id="s" aria-label="Stars"></div></section></main>
 <script src="/art.js"></script>
-<script>const K=['apple','banana','strawberry','orange','grape'];let n=0;
+<script>const K=['apple','banana','strawberry','orange','grape'];
+const NAMA={apple:['apple','apples'],banana:['banana','bananas'],strawberry:['strawberry','strawberries'],orange:['orange','oranges'],grape:['grape','grapes']};
+let n=0,fr='';
 const b=document.getElementById('b'),o=document.getElementById('o'),m=document.getElementById('m'),s=document.getElementById('s');
 function baru(){
-  n=1+Math.floor(Math.random()*10);const k=K[Math.floor(Math.random()*K.length)];
+  n=1+Math.floor(Math.random()*10);const k=K[Math.floor(Math.random()*K.length)];fr=NAMA[k][n===1?0:1];
   b.className='fruits';b.innerHTML=Array.from({length:n},(_,i)=>ART[k].replace('<svg','<svg style="--i:'+i+'"')).join('');
   m.textContent='';
   const p=new Set([n]);while(p.size<3)p.add(1+Math.floor(Math.random()*10));
@@ -21,11 +22,11 @@ function baru(){
     const x=document.createElement('button');x.className='opt';x.textContent=v;x.style.setProperty('--i',i);
     x.onclick=()=>{
       if(v===n){
-        window.HP&&(HP.ok(),HP.say(String(n)));b.className='fruits hore';m.textContent='Pintar! '+n;
+        window.HP&&(HP.ok(),HP.say(numWord(n)+' '+fr));b.className='fruits hore';m.textContent='Great job! '+n+' '+fr+'.';
         [...o.children].forEach(c=>c.disabled=true);x.classList.add('benar');
-        s.insertAdjacentHTML('beforeend',ART.star);setTimeout(baru,1700);
+        s.insertAdjacentHTML('beforeend',ART.star);setTimeout(baru,2000);
       }else{
-        window.HP&&HP.no();m.textContent='Coba lagi ya';x.style.opacity=.35;
+        window.HP&&HP.no();m.textContent='Try again!';x.style.opacity=.35;
         x.classList.remove('salah');void x.offsetWidth;x.classList.add('salah');
       }
     };

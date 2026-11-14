@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jangan Bangunkan! · Hive Play</title>
+<title>Shh! Don’t Wake Them Up! · Hive Play</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f5f4ff;--ink:#1a1b4b;--mute:#5d5f95;--card:rgba(255,255,255,.74);--line:rgba(26,27,75,.1);--shadow:0 24px 50px -24px rgba(70,60,160,.4);
@@ -93,12 +93,12 @@ input[type=text]{border:1px solid var(--line);background:var(--card);color:var(-
 <body data-s="sleep">
 <div class="mesh" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>
 <main>
-  <a class="back" href="/">← Kembali</a>
-  <h1 style="margin-top:14px">Jangan Bangunkan!</h1>
-  <p class="sub">Minta kelas tenang. Kalau terlalu ribut, anak yang sedang tidur ini akan terbangun.</p>
+  <a class="back" href="/">← Back</a>
+  <h1 style="margin-top:14px">Shh! Don’t Wake Them Up!</h1>
+  <p class="sub">Keep the class quiet. If it gets too loud, the sleeping child will wake up.</p>
 
   <section class="panel stage">
-    <svg class="kid sleep" id="kid" viewBox="0 0 360 260" role="img" aria-label="Anak yang sedang tidur di tempat tidur">
+    <svg class="kid sleep" id="kid" viewBox="0 0 360 260" role="img" aria-label="A child sleeping in bed">
       <defs>
         <linearGradient id="bl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc14d"/><stop offset="1" stop-color="#ff9a3c"/></linearGradient>
         <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="3.5" fill="#fff" fill-opacity=".4"/><circle cx="19" cy="19" r="3.5" fill="#fff" fill-opacity=".4"/></pattern>
@@ -132,31 +132,31 @@ input[type=text]{border:1px solid var(--line);background:var(--card);color:var(-
       <g class="dp" fill="#ffe28a"><g transform="translate(82 80)"><path class="tw" d="M0-9L2-2L9 0L2 2L0 9L-2 2L-9 0L-2-2Z"/></g><g transform="translate(284 60)"><path class="tw" style="animation-delay:.5s" d="M0-9L2-2L9 0L2 2L0 9L-2 2L-9 0L-2-2Z"/></g><g transform="translate(300 130)"><path class="tw" style="animation-delay:.9s" d="M0-7L1.6-1.6L7 0L1.6 1.6L0 7L-1.6 1.6L-7 0L-1.6-1.6Z"/></g></g>
     </svg>
 
-    <div class="status" id="status" aria-live="polite">Tekan tombol mikrofon untuk mulai.</div>
-    <div class="quiet" id="quiet">Waktu tenang: 0 dari 30 detik</div>
+    <div class="status" id="status" aria-live="polite">Press the microphone button to start.</div>
+    <div class="quiet" id="quiet">Quiet time: 0 of 30 seconds</div>
 
-    <div class="lbl"><span>Suara kelas</span><span id="db">Hening</span></div>
+    <div class="lbl"><span>Class noise</span><span id="db">Silent</span></div>
     <div class="meter" aria-hidden="true"><i id="vol"></i></div>
-    <div class="lbl"><span>Nyenyaknya tidur</span><span id="pt">100%</span></div>
+    <div class="lbl"><span>Sleep depth</span><span id="pt">100%</span></div>
     <div class="meter" aria-hidden="true"><i id="pat" style="width:100%"></i></div>
 
     <div class="row" style="justify-content:center">
-      <button class="btn" id="start">Nyalakan mikrofon</button>
-      <button class="btn alt" id="reset">Tidurkan lagi</button>
+      <button class="btn" id="start">Turn on microphone</button>
+      <button class="btn alt" id="reset">Put back to sleep</button>
     </div>
 
-    <div class="chips" style="justify-content:center"><span>Misi tenang:</span>
-      <button data-g="15">15 detik</button><button data-g="30" class="on">30 detik</button><button data-g="60">60 detik</button>
-      <label style="margin-left:6px">Nama anak <input type="text" id="nama" value="Bimo" maxlength="14" aria-label="Nama anak"></label>
+    <div class="chips" style="justify-content:center"><span>Quiet mission:</span>
+      <button data-g="15">15 seconds</button><button data-g="30" class="on">30 seconds</button><button data-g="60">60 seconds</button>
+      <label style="margin-left:6px">Child’s name <input type="text" id="nama" value="Sam" maxlength="14" aria-label="Child’s name"></label>
     </div>
 
-    <p class="mute" style="margin:16px 0 4px;color:var(--mute)">Kepekaan mikrofon (geser kanan kalau terlalu mudah marah)</p>
-    <input type="range" id="sens" min="1" max="100" value="45" aria-label="Kepekaan mikrofon">
+    <p class="mute" style="margin:16px 0 4px;color:var(--mute)">Microphone sensitivity (slide right if it wakes up too easily)</p>
+    <input type="range" id="sens" min="1" max="100" value="45" aria-label="Microphone sensitivity">
 
     <div class="row" style="justify-content:center">
-      <button class="btn alt" id="fake">Tahan untuk menguji keributan</button>
+      <button class="btn alt" id="fake">Hold to test the noise</button>
     </div>
-    <p class="note" id="micmsg">Suara tidak direkam dan tidak dikirim ke mana pun. Diproses langsung di browser. Tidak ada musik di game ini supaya mikrofon tidak salah menangkap.</p>
+    <p class="note" id="micmsg">Sound is never recorded or sent anywhere. It is processed right in your browser. There is no music in this game so the microphone does not pick it up.</p>
   </section>
 </main>
 
@@ -164,7 +164,7 @@ input[type=text]{border:1px solid var(--line);background:var(--card);color:var(-
 const $=id=>document.getElementById(id);
 let ac,an,buf,micOn=false,fake=false,pat=100,quiet=0,best=0,goal=30,over=false,wasDeep=false,last=performance.now();
 const kid=$('kid'),COL=['#8b7bff','#ff7ab6','#ffc14d','#3fe0c5'];
-const nama=()=>($('nama').value.trim()||'Si kecil');
+const nama=()=>($('nama').value.trim()||'The child');
 
 function set(s,msg){kid.setAttribute('class','kid '+s);document.body.dataset.s=s;$('status').textContent=msg}
 function burst(){
@@ -185,10 +185,10 @@ async function startMic(){
     const st=await navigator.mediaDevices.getUserMedia({audio:true});
     ac=ac||new (window.AudioContext||window.webkitAudioContext)();
     const src=ac.createMediaStreamSource(st);an=ac.createAnalyser();an.fftSize=1024;src.connect(an);buf=new Uint8Array(an.fftSize);
-    micOn=true;$('start').textContent='Mikrofon menyala';
-    $('micmsg').textContent='Mikrofon aktif. Minta kelas tenang…';
+    micOn=true;$('start').textContent='Microphone is on';
+    $('micmsg').textContent='Microphone is on. Ask the class to be quiet…';
   }catch(e){
-    $('micmsg').textContent='Mikrofon tidak bisa diakses. Izinkan akses mikrofon di browser, atau buka halaman ini langsung di tab baru. Sementara itu kamu bisa mencoba lewat tombol uji keributan.';
+    $('micmsg').textContent='The microphone could not be accessed. Allow microphone access in your browser, or open this page directly in a new tab. You can still try the game with the noise test button.';
   }
 }
 function level(){
@@ -202,24 +202,24 @@ function loop(now){
   const dt=Math.min(.25,(now-last)/1000);last=now;
   const lv=level(),limit=.08+($('sens').value/100)*.5,loud=lv>limit;
   $('vol').style.width=(lv*100)+'%';$('vol').className=loud?'hot':'';
-  $('db').textContent=lv<.03?'Hening':loud?'Terlalu ribut':'Tenang';
+  $('db').textContent=lv<.03?'Silent':loud?'Too loud':'Quiet';
   if(over)return;
   if(loud){pat-=dt*(25+lv*40);quiet=0}else{pat=Math.min(100,pat+dt*8);quiet+=dt}
   pat=Math.max(0,pat);best=Math.max(best,quiet);
   $('pat').style.width=pat+'%';$('pt').textContent=Math.round(pat)+'%';
-  $('quiet').textContent='Waktu tenang: '+Math.floor(quiet)+' dari '+goal+' detik · terbaik '+Math.floor(best)+' detik';
+  $('quiet').textContent='Quiet time: '+Math.floor(quiet)+' of '+goal+' seconds · best '+Math.floor(best)+' seconds';
   const n=nama();
-  if(pat<=0){over=true;set('awake',n+' bangun! Kelas terlalu ribut.');wakeSound();wasDeep=false;return}
-  if(pat<55){set('stir',n+' mulai terganggu… pelan-pelan ya!');wasDeep=false}
-  else if(quiet>=goal){set('deep','Misi berhasil! '+n+' bermimpi indah.');if(!wasDeep){wasDeep=true;burst()}}
-  else{set('sleep','Shh… '+n+' tidur nyenyak.');wasDeep=false}
+  if(pat<=0){over=true;set('awake',n+' woke up! The class is too loud.');wakeSound();wasDeep=false;return}
+  if(pat<55){set('stir',n+' is getting restless… quieter, please!');wasDeep=false}
+  else if(quiet>=goal){set('deep','Mission complete! '+n+' is having sweet dreams.');if(!wasDeep){wasDeep=true;burst()}}
+  else{set('sleep','Shh… '+n+' is sound asleep.');wasDeep=false}
 }
 $('start').onclick=()=>{if(!micOn)startMic()};
-$('reset').onclick=()=>{pat=100;quiet=0;over=false;wasDeep=false;set('sleep','Shh… '+nama()+' tidur lagi.')};
+$('reset').onclick=()=>{pat=100;quiet=0;over=false;wasDeep=false;set('sleep','Shh… '+nama()+' is asleep again.')};
 document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{goal=+b.dataset.g;wasDeep=false;document.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('on',x===b))});
 const f=$('fake');['pointerdown'].forEach(e=>f.addEventListener(e,()=>fake=true));['pointerup','pointerleave','pointercancel'].forEach(e=>f.addEventListener(e,()=>fake=false));
 f.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){fake=true;setTimeout(()=>fake=false,700)}});
-set('sleep','Shh… '+nama()+' tidur nyenyak. Tekan mikrofon untuk mulai.');
+set('sleep','Shh… '+nama()+' is sound asleep. Press the microphone button to start.');
 requestAnimationFrame(loop);
 </script>
 </body>

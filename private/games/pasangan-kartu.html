@@ -1,43 +1,42 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pasangan Kartu · Hive Play</title>
+<title>Memory Match · Hive Play</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/hive.css"></head><body>
-<div class="top"><a class="back" href="/">← Kembali</a></div>
+<div class="top"><a class="back" href="/">← Back</a></div>
 <main>
-<h1 class="rise">Pasangan Kartu</h1>
-<p class="sub rise" style="--i:1">Tulis pasangan dengan tanda sama dengan, satu pasang per baris. Cocok untuk kosakata, rumus, atau istilah.</p>
+<h1 class="rise">Memory Match</h1>
+<p class="sub rise" style="--i:1">Write word pairs with an equals sign, one pair per line. Great for vocabulary, opposites, or phrases.</p>
 <section class="stage rise" style="--i:2;text-align:left">
-<textarea class="field" id="pairs" aria-label="Daftar pasangan">cat=kucing
-dog=anjing
-bird=burung
-fish=ikan
-book=buku
-apple=apel</textarea>
-<div class="row"><button class="btn" id="deal">Bagikan kartu</button><span style="color:var(--mute)" id="moves"></span></div>
+<textarea class="field" id="pairs" aria-label="List of word pairs">hot=cold
+big=small
+up=down
+happy=sad
+fast=slow
+day=night</textarea>
+<div class="row"><button class="btn" id="deal">Deal the cards</button><span style="color:var(--mute)" id="moves"></span></div>
 <div class="memgrid" id="grid"></div>
-</section>
-</main>
+</section></main>
 <script src="/art.js"></script>
 <script>const $=id=>document.getElementById(id);
 let first=null,lock=false,moves=0,matched=0,total=0;
 $('deal').onclick=()=>{
   const pairs=$('pairs').value.split('\n').map(l=>l.split('=').map(s=>s.trim())).filter(p=>p[0]&&p[1]).slice(0,10);
-  if(!pairs.length){$('moves').textContent='Tulis minimal satu pasang.';return}
+  if(!pairs.length){$('moves').textContent='Write at least one pair.';return}
   const cards=[];pairs.forEach((p,i)=>cards.push({k:i,t:p[0]},{k:i,t:p[1]}));
   for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}
-  first=null;lock=false;moves=0;matched=0;total=pairs.length;$('moves').textContent='Langkah: 0';
+  first=null;lock=false;moves=0;matched=0;total=pairs.length;$('moves').textContent='Moves: 0';
   const g=$('grid');g.innerHTML='';
   cards.forEach(c=>{const b=document.createElement('button');b.className='mem';b.textContent=c.t;b.dataset.k=c.k;b.style.setProperty('--i',g.children.length);b.onclick=()=>flip(b);g.appendChild(b)});
 };
 function flip(b){
   if(lock||b.classList.contains('up')||b.classList.contains('done'))return;
-  b.classList.add('up');window.HP&&HP.flip();
+  b.classList.add('up');window.HP&&(HP.flip(),HP.say(b.textContent));
   if(!first){first=b;return}
-  moves++;$('moves').textContent='Langkah: '+moves;
+  moves++;$('moves').textContent='Moves: '+moves;
   if(first.dataset.k===b.dataset.k){
     first.className=b.className='mem done';first=null;matched++;window.HP&&HP.match();
-    if(matched===total){$('moves').textContent='Selesai dalam '+moves+' langkah!';window.HP&&HP.win()}
+    if(matched===total){$('moves').textContent='Done in '+moves+' moves!';window.HP&&HP.win()}
   }else{
     lock=true;const a=first;first=null;a.classList.add('salah');b.classList.add('salah');window.HP&&HP.no();
     setTimeout(()=>{a.classList.remove('up','salah');b.classList.remove('up','salah');lock=false},900);

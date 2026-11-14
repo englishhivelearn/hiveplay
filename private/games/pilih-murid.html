@@ -1,29 +1,29 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pilih Murid · Hive Play</title>
+<title>Pick a Student · Hive Play</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/hive.css"></head><body>
-<div class="top"><a class="back" href="/">← Kembali</a></div>
+<div class="top"><a class="back" href="/">← Back</a></div>
 <main>
-<h1 class="rise">Pilih Murid</h1>
-<p class="sub rise" style="--i:1">Tulis nama murid, satu baris satu nama. Pilih lewat roda putar atau balap bebek. Yang terpilih otomatis keluar dari daftar.</p>
+<h1 class="rise">Pick a Student</h1>
+<p class="sub rise" style="--i:1">Type the students’ names, one per line. Pick with the spin wheel or the duck race. The winner is taken off the list.</p>
 <section class="stage rise" style="--i:2;text-align:left">
-<textarea class="field" id="names" aria-label="Daftar nama murid">Andi
+<textarea class="field" id="names" aria-label="List of student names">Andi
 Bunga
 Citra
 Dewa
 Eka</textarea>
 <div class="hint" id="sisa" style="text-align:center;margin:10px 0 0"></div>
 <div class="chips" style="justify-content:center;margin:10px 0 0">
-  <button data-m="roda" class="on">Roda Putar</button><button data-m="bebek">Balap Bebek</button>
+  <button data-m="roda" class="on">Spin the Wheel</button><button data-m="bebek">Duck Race</button>
 </div>
 <div id="wrapBebek" hidden><div class="komentar" id="komentar" aria-live="polite"></div><div class="pond" id="pond"></div></div>
 <div id="wrapRoda"><div class="wheelbox"><div class="pointer"></div><div id="wheel"></div></div></div>
 <div class="hint" id="info" style="text-align:center;margin:8px 0 0;font-size:15px"></div>
-<div class="nm" id="pick" style="text-align:center" aria-live="polite">Siapa yang maju?</div>
-<div class="row"><button class="btn" id="spin">Putar roda!</button><button class="btn alt" id="back" hidden>Kembalikan semua nama</button></div>
-<div class="row" style="margin-top:10px"><label style="color:var(--mute);font-size:16px"><input type="checkbox" id="norepeat" checked> Keluarkan nama yang sudah terpilih dari daftar</label></div>
-<div class="done-list" id="done" aria-label="Murid yang sudah maju"></div>
+<div class="nm" id="pick" style="text-align:center" aria-live="polite">Who’s next?</div>
+<div class="row"><button class="btn" id="spin">Spin the wheel!</button><button class="btn alt" id="back" hidden>Put all names back</button></div>
+<div class="row" style="margin-top:10px"><label style="color:var(--mute);font-size:16px"><input type="checkbox" id="norepeat" checked> Take picked names off the list</label></div>
+<div class="done-list" id="done" aria-label="Students already picked"></div>
 </section>
 </main>
 <script src="/art.js"></script>
@@ -37,10 +37,10 @@ const pot=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
 function tulis(t){const p=$('pick');p.textContent='';[...t].forEach((c,j)=>{const x=document.createElement('span');x.textContent=c===' '?'\u00a0':c;x.style.setProperty('--k',j);p.appendChild(x)})}
 
 function segarkan(){
-  $('sisa').textContent='Sisa di daftar: '+baca().length+' murid';
+  $('sisa').textContent='Names left in the list: '+baca().length;
   $('back').hidden=!sudah.length;
   const d=$('done');d.textContent='';
-  if(sudah.length){const l=document.createElement('span');l.textContent='Sudah maju:';l.style.cssText='background:none;box-shadow:none';d.appendChild(l);
+  if(sudah.length){const l=document.createElement('span');l.textContent='Already picked:';l.style.cssText='background:none;box-shadow:none';d.appendChild(l);
     sudah.forEach(n=>{const x=document.createElement('span');x.textContent=n;d.appendChild(x)})}
 }
 
@@ -89,7 +89,7 @@ function bangunRoda(list){
     else{const [x0,y0]=pt(a0,R),[x1,y1]=pt(a1,R);g+='<path d="M160 160L'+x0.toFixed(1)+' '+y0.toFixed(1)+'A150 150 0 '+(s>180?1:0)+' 1 '+x1.toFixed(1)+' '+y1.toFixed(1)+'Z" fill="'+c+'" stroke="#fff" stroke-width="2"/>'}
     g+='<text data-i="'+i+'" transform="translate(160 160) rotate('+mid.toFixed(1)+')" x="136" y="5" text-anchor="end" font-family="Fredoka,sans-serif" font-weight="700" font-size="'+(n<=8?19:n<=12?15:12)+'" fill="#1a1b4b"></text>';
   });
-  $('wheel').innerHTML='<svg id="wsvg" viewBox="0 0 320 320" role="img" aria-label="Roda nama murid"><circle cx="160" cy="160" r="154" fill="#fff" opacity=".6"/>'+g+'<circle cx="160" cy="160" r="20" fill="#fff" stroke="#8b7bff" stroke-width="5"/></svg>';
+  $('wheel').innerHTML='<svg id="wsvg" viewBox="0 0 320 320" role="img" aria-label="Student name wheel"><circle cx="160" cy="160" r="154" fill="#fff" opacity=".6"/>'+g+'<circle cx="160" cy="160" r="20" fill="#fff" stroke="#8b7bff" stroke-width="5"/></svg>';
   $('wheel').querySelectorAll('text').forEach(t=>t.textContent=pot(list[+t.dataset.i],11));
 }
 function pratinjau(){
@@ -98,7 +98,7 @@ function pratinjau(){
   if(mode==='bebek'){$('wrapBebek').hidden=!all.length;if(all.length)bangunKolam(all.slice(0,MAXB));else $('pond').textContent=''}
   else bangunRoda(all.slice(0,MAXR));
   const maks=mode==='bebek'?MAXB:MAXR;
-  $('info').textContent=all.length>maks?('Maksimal '+maks+' peserta per putaran. '+maks+' nama akan diambil secara acak dari '+all.length+' nama.'):'';
+  $('info').textContent=all.length>maks?('Up to '+maks+' players per round. '+maks+' names will be picked at random from '+all.length+'.'):'';
 }
 function kunci(b){busy=b;$('spin').disabled=b;$('names').disabled=b;document.querySelectorAll('[data-m]').forEach(x=>x.disabled=b)}
 function selesai(win){
@@ -110,16 +110,16 @@ function selesai(win){
 
 function mulai(){
   const all=baca();
-  if(!all.length){$('pick').textContent=sudah.length?'Semua sudah maju!':'Isi nama dulu';return}
+  if(!all.length){$('pick').textContent=sudah.length?'Everyone has had a turn!':'Add some names first';return}
   kunci(true);
   mode==='bebek'?balap(all):putar(all);
 }
 function balap(all){
   const peserta=acak(all,MAXB);$('wrapBebek').hidden=false;bangunKolam(peserta);
-  $('info').textContent=all.length>MAXB?('Peserta: '+MAXB+' nama acak dari '+all.length):'';
+  $('info').textContent=all.length>MAXB?('Players: '+MAXB+' random names out of '+all.length):'';
   const pd=$('pond'),ducks=[...pd.querySelectorAll('.duck')],lanes=[...pd.querySelectorAll('.lane')],kom=$('komentar'),cd=$('cdown'),pos=mapper(pd),n=peserta.length;
   if(pd.scrollIntoView)pd.scrollIntoView({block:'center',behavior:'smooth'});
-  kom.textContent='Bersiap…';
+  kom.textContent='Get ready…';
   const hitung=['3','2','1','GO!'];let h=0;
   const tampil=()=>{cd.textContent=hitung[h];cd.classList.remove('pop');void cd.offsetWidth;cd.classList.add('pop');window.HP&&(h<3?HP.tick(700+h*200):HP.pop())};
   tampil();
@@ -146,7 +146,7 @@ function balap(all){
       if(selesaiLomba)return;
       let dt=Math.min(.05,(now-last)/1000);last=now;
       const L=Math.max(...S.map(s=>s.p)),akhir=L>CAMSTOP;
-      if(akhir&&!sudahAkhir){sudahAkhir=true;ucap('Garis finis sudah dekat!')}
+      if(akhir&&!sudahAkhir){sudahAkhir=true;ucap('The finish line is close!')}
       dt*=L>.95?.55:1;                       /* gerak lambat menjelang finis */
       const avg=S.reduce((a,s)=>a+s.p,0)/n;
       S.forEach((s,i)=>{
@@ -154,7 +154,7 @@ function balap(all){
         if(s.t<=0){
           const m=acara(s,akhir),nm=peserta[i];
           MODE.forEach(c=>ducks[i].classList.toggle(c,(' '+s.mode+' ').includes(' '+c+' ')));
-          if(m)ucap({ngebut:nm+' ngebut!',turbo:nm+' pakai turbo!!',nap:nm+' ketiduran…',back:nm+' salah arah!',kaget:nm+' kaget lalu ngebut!'}[m]);
+          if(m)ucap({ngebut:nm+' is speeding!',turbo:nm+' hits the turbo!!',nap:nm+' fell asleep…',back:nm+' is going the wrong way!',kaget:nm+' woke up and zoomed!'}[m]);
         }
         s.cur+=(s.tg-s.cur)*Math.min(1,dt*9);
         const rb=Math.min(1.45,Math.max(.72,1+(avg-s.p)*5));   /* menjaga rombongan tetap rapat, supaya salip-salipan */
@@ -165,12 +165,12 @@ function balap(all){
       const L2=Math.max(...S.map(s=>s.p)),li=S.findIndex(s=>s.p===L2);
       cam+=(Math.min(L2,CAMSTOP)-cam)*Math.min(1,dt*4);   /* kamera berhenti di CAMSTOP, bebek baru maju ke garis finis */
       pos(cam,S.map(s=>s.p));
-      if(li!==lead){lead=li;ducks.forEach((d,i)=>d.classList.toggle('lead',i===li));if(!akhir)ucap(peserta[li]+' memimpin!')}
+      if(li!==lead){lead=li;ducks.forEach((d,i)=>d.classList.toggle('lead',i===li));if(!akhir)ucap(peserta[li]+' takes the lead!')}
       if(L2>=1){
         selesaiLomba=true;pd.classList.remove('racing');pd.classList.add('done');
         MODE.forEach(c=>ducks[li].classList.remove(c));
         lanes[li].classList.add('win');ducks[li].classList.add('win');
-        kom.textContent=peserta[li]+' juara!';
+        kom.textContent=peserta[li]+' wins!';
         selesai(peserta[li]);return;
       }
       requestAnimationFrame(f);
@@ -179,8 +179,8 @@ function balap(all){
 }
 function putar(all){
   const peserta=acak(all,MAXR);bangunRoda(peserta);
-  $('info').textContent=all.length>MAXR?('Peserta: '+MAXR+' nama acak dari '+all.length):'';
-  $('pick').textContent='Berputar…';
+  $('info').textContent=all.length>MAXR?('Players: '+MAXR+' random names out of '+all.length):'';
+  $('pick').textContent='Spinning…';
   const n=peserta.length,s=360/n,w=Math.floor(Math.random()*n),mid=w*s+s/2,jit=(Math.random()-.5)*s*.8; /* berhenti dekat batas irisan: hampir meleset */
   const kurang=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,dur=kurang?1.2:10;
   const need=(((-mid+jit-rot)%360)+360)%360,target=rot+360*(9+Math.floor(Math.random()*3))+need;
@@ -198,22 +198,22 @@ function putar(all){
       ptr.classList.remove('flick');void ptr.offsetWidth;ptr.classList.add('flick')}}
     const sisa=1-(now-t0)/(dur*1000);
     box.classList.toggle('tegang',sisa<.3);
-    if(sisa<.28&&$('pick').textContent==='Berputar…')$('pick').textContent='Siapa ya…?';
+    if(sisa<.28&&$('pick').textContent==='Spinning…')$('pick').textContent='Who will it be…?';
     requestAnimationFrame(f);
   })(t0);
   const fin=()=>{if(ended)return;ended=true;box.classList.remove('tegang');
-    $('pick').textContent='Dan yang terpilih adalah…';
+    $('pick').textContent='And the winner is…';
     setTimeout(()=>selesai(peserta[w]),1100)};
   sv.addEventListener('transitionend',fin,{once:true});setTimeout(fin,dur*1000+400);
 }
 
 $('names').oninput=()=>{segarkan();pratinjau()};
 $('spin').onclick=mulai;
-$('back').onclick=()=>{$('names').value=baca().concat(sudah).join('\n');sudah=[];$('pick').textContent='Siapa yang maju?';segarkan();pratinjau()};
+$('back').onclick=()=>{$('names').value=baca().concat(sudah).join('\n');sudah=[];$('pick').textContent='Who’s next?';segarkan();pratinjau()};
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{
   mode=b.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===b));
   $('wrapBebek').hidden=mode!=='bebek';$('wrapRoda').hidden=mode!=='roda';
-  $('spin').textContent=mode==='bebek'?'Mulai balapan!':'Putar roda!';pratinjau();
+  $('spin').textContent=mode==='bebek'?'Start the race!':'Spin the wheel!';pratinjau();
 });
 segarkan();pratinjau();</script>
 <script src="/hive.js" defer></script></body></html>

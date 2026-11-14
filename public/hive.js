@@ -29,8 +29,8 @@
       document.body.appendChild(s); setTimeout(() => s.remove(), 900);
     }
   }
-  function say(t) {
-    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'id-ID'; u.rate = 0.85; speechSynthesis.speak(u); } catch (e) {}
+  function say(t, lang) {
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = lang || 'en-US'; u.rate = 0.85; speechSynthesis.speak(u); } catch (e) {}
   }
 
   /* ---------- audio ---------- */
@@ -106,7 +106,7 @@
   /* tombol suara */
   const btn = document.createElement('button');
   btn.className = 'hp-snd'; btn.type = 'button';
-  function paint() { btn.innerHTML = A(on ? 'speakerOn' : 'speakerOff'); btn.setAttribute('aria-pressed', String(on)); btn.setAttribute('aria-label', on ? 'Matikan suara' : 'Nyalakan suara'); }
+  function paint() { btn.innerHTML = A(on ? 'speakerOn' : 'speakerOff'); btn.setAttribute('aria-pressed', String(on)); btn.setAttribute('aria-label', on ? 'Turn sound off' : 'Turn sound on'); }
   paint();
   btn.onclick = () => {
     on = !on; try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {}

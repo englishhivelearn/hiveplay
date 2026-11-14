@@ -19,3 +19,6 @@ moon:`<svg viewBox="0 0 120 120"><path d="M76 16a46 46 0 1 0 28 66A38 38 0 0 1 7
 pick:`<svg viewBox="0 0 120 120"><path d="M60 62V16A46 46 0 0 1 106 62Z" fill="#8b7bff"/><path d="M60 62H106A46 46 0 0 1 60 108Z" fill="#ff7ab6"/><path d="M60 62V108A46 46 0 0 1 14 62Z" fill="#ffc14d"/><path d="M60 62H14A46 46 0 0 1 60 16Z" fill="#3fe0c5"/><circle cx="60" cy="62" r="11" fill="#fff"/><path d="M60 6l8 14H52z" fill="#1a1b4b"/></svg>`,
 pairs:`<svg viewBox="0 0 120 120"><rect x="16" y="26" width="52" height="68" rx="12" fill="#8b7bff" transform="rotate(-10 42 60)"/><rect x="52" y="26" width="52" height="68" rx="12" fill="#ff7ab6" transform="rotate(10 78 60)"/><path d="M60 46l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="#fff"/></svg>`
 });
+
+const ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function numWord(n){if(n<20)return ONES[n];if(n<100)return TENS[Math.floor(n/10)]+(n%10?'-'+ONES[n%10]:'');return n===100?'one hundred':String(n)}
