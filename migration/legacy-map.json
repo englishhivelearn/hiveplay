@@ -1,0 +1,130 @@
+[
+  {
+    "legacyKey": "ART.dog (public/art.js, lib/art.js)",
+    "slug": "animal.dog.character",
+    "newPath": "assets/library/vocabulary/animals/dog_character.svg",
+    "bytes": 763,
+    "sha256": "3564c358582a08dd45bd1d89a8fd9cb5a3fa9efaba6cc438cb180e13f593ce22",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.cat (public/art.js, lib/art.js)",
+    "slug": "animal.cat.character",
+    "newPath": "assets/library/vocabulary/animals/cat_character.svg",
+    "bytes": 889,
+    "sha256": "0dcc536048a9adcd142994c22a55471c79c067c3cb15733fa85f80216de4a8d8",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.cow (public/art.js, lib/art.js)",
+    "slug": "animal.cow.character",
+    "newPath": "assets/library/vocabulary/animals/cow_character.svg",
+    "bytes": 775,
+    "sha256": "030d328a26475db10fb433cf4d1872e18e993b8f15ecab834247d0bdfbb2f677",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.frog (public/art.js, lib/art.js)",
+    "slug": "animal.frog.character",
+    "newPath": "assets/library/vocabulary/animals/frog_character.svg",
+    "bytes": 734,
+    "sha256": "e309e97f3a5bc475f16093ade8a8f2aa28b7a5c96eb29c953767e289f6cf9768",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.apple (public/art.js, lib/art.js)",
+    "slug": "fruit.apple.whole",
+    "newPath": "assets/library/vocabulary/fruits/apple_whole.svg",
+    "bytes": 357,
+    "sha256": "a07424d04a7f32b2a177135ff7d531e7af0ddac6ea9e3a3013ef06910accc9da",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.banana (public/art.js, lib/art.js)",
+    "slug": "fruit.banana.whole",
+    "newPath": "assets/library/vocabulary/fruits/banana_whole.svg",
+    "bytes": 326,
+    "sha256": "04d50b0d4e4c5b1220b3f3e3978705818fa0607337fb9ea6dc443f62bccaa09a",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.strawberry (public/art.js, lib/art.js)",
+    "slug": "fruit.strawberry.whole",
+    "newPath": "assets/library/vocabulary/fruits/strawberry_whole.svg",
+    "bytes": 577,
+    "sha256": "8b04cba10fdda764fd10377643fe28eca7f594bbcc9a1cb0a3643fd17e19b76c",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.orange (public/art.js, lib/art.js)",
+    "slug": "fruit.orange.whole",
+    "newPath": "assets/library/vocabulary/fruits/orange_whole.svg",
+    "bytes": 330,
+    "sha256": "60c6f6b8195612a5a32ef60ff013258656fcb170bcad330032488b7e425e4dfb",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.grape (public/art.js, lib/art.js)",
+    "slug": "fruit.grape.whole",
+    "newPath": "assets/library/vocabulary/fruits/grape_whole.svg",
+    "bytes": 528,
+    "sha256": "cb07320cdb104de4d68da3f2cd51b97083c54a9c18290a482627e26118debf31",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.star (public/art.js, lib/art.js)",
+    "slug": "object.star",
+    "newPath": "assets/library/objects/collectibles/star.svg",
+    "bytes": 175,
+    "sha256": "51e7c9f80e16ae01e9c5d6e2134586f9108e891704c01457c6312e385d92ff77",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.trophy (public/art.js, lib/art.js)",
+    "slug": "object.trophy",
+    "newPath": "assets/library/objects/collectibles/trophy.svg",
+    "bytes": 398,
+    "sha256": "1ff99a6c90c9e8f7fc804eca31385afe7fe88fff034311e6dc9e25d5721d25cd",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.kali (public/art.js, lib/art.js)",
+    "slug": "ui.icon.times-table",
+    "newPath": "assets/library/ui/icons/times-table.svg",
+    "bytes": 332,
+    "sha256": "eaa0222d8954cea94018395caeaf175306eace381d28c7defec4ccbd4aa5f19a",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.moon (public/art.js, lib/art.js)",
+    "slug": "ui.icon.sleeping-moon",
+    "newPath": "assets/library/ui/icons/sleeping-moon.svg",
+    "bytes": 267,
+    "sha256": "220e88ecdfd65813a7460cfe70a3a85f5137331256ae46939789530aada07a3f",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.pick (public/art.js, lib/art.js)",
+    "slug": "ui.icon.spin-wheel",
+    "newPath": "assets/library/ui/icons/spin-wheel.svg",
+    "bytes": 342,
+    "sha256": "14f0ba1a303de263528c6f91e8f40e6ee9d9b5b7991abd99397a918bf0c7da19",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "ART.pairs (public/art.js, lib/art.js)",
+    "slug": "ui.icon.memory-cards",
+    "newPath": "assets/library/ui/icons/memory-cards.svg",
+    "bytes": 300,
+    "sha256": "82fe189f3b138e972e2b484134f76243f1250163e8a723a4b811bad5b4234a56",
+    "contentIdentical": true
+  },
+  {
+    "legacyKey": "LOGO (lib/art.js)",
+    "slug": "ui.brand.hive-logo",
+    "newPath": "assets/library/ui/interface/hive-logo.svg",
+    "bytes": 377,
+    "sha256": "3875994c9663986fca71870f25966cb2d7c199c0a85aee428649774eff7e7ded",
+    "contentIdentical": true
+  }
+]

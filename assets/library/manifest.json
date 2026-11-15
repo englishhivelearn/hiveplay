@@ -1,0 +1,883 @@
+{
+  "generatedBy": "scripts/extract-legacy-assets.mjs",
+  "categories": [
+    {
+      "slug": "vocab-animals",
+      "name": "Animals",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-fruits",
+      "name": "Fruits",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-food",
+      "name": "Food",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-transportation",
+      "name": "Transportation",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-school-supplies",
+      "name": "School Supplies",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-body-parts",
+      "name": "Body Parts",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-colors",
+      "name": "Colors",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-shapes",
+      "name": "Shapes",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-occupations",
+      "name": "Occupations",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-household-items",
+      "name": "Household Items",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "vocab-other",
+      "name": "Other Vocabulary",
+      "group": "VOCABULARY"
+    },
+    {
+      "slug": "char-players",
+      "name": "Playable Characters",
+      "group": "CHARACTER"
+    },
+    {
+      "slug": "char-monsters",
+      "name": "Monsters",
+      "group": "CHARACTER"
+    },
+    {
+      "slug": "char-animals",
+      "name": "Animal Characters",
+      "group": "CHARACTER"
+    },
+    {
+      "slug": "char-npcs",
+      "name": "NPCs",
+      "group": "CHARACTER"
+    },
+    {
+      "slug": "char-enemies",
+      "name": "Enemies",
+      "group": "CHARACTER"
+    },
+    {
+      "slug": "env-classroom",
+      "name": "Classroom",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-school",
+      "name": "School",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-forest",
+      "name": "Forest",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-beach",
+      "name": "Beach",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-space",
+      "name": "Space",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-city",
+      "name": "City",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-underwater",
+      "name": "Underwater",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "env-other",
+      "name": "Other Backgrounds",
+      "group": "ENVIRONMENT"
+    },
+    {
+      "slug": "obj-collectibles",
+      "name": "Collectibles",
+      "group": "OBJECT"
+    },
+    {
+      "slug": "obj-obstacles",
+      "name": "Obstacles",
+      "group": "OBJECT"
+    },
+    {
+      "slug": "obj-interactive",
+      "name": "Interactive Objects",
+      "group": "OBJECT"
+    },
+    {
+      "slug": "obj-props",
+      "name": "Props (coins, keys, chests, tools)",
+      "group": "OBJECT"
+    },
+    {
+      "slug": "audio-vocabulary",
+      "name": "Vocabulary Pronunciation",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "audio-music",
+      "name": "Background Music",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "audio-sfx",
+      "name": "Sound Effects",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "audio-success",
+      "name": "Success Sounds",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "audio-failure",
+      "name": "Failure Sounds",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "audio-character",
+      "name": "Character Sounds",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "audio-ui",
+      "name": "UI Sounds",
+      "group": "AUDIO"
+    },
+    {
+      "slug": "anim-characters",
+      "name": "Character Animations",
+      "group": "ANIMATION"
+    },
+    {
+      "slug": "anim-monsters",
+      "name": "Monster Animations",
+      "group": "ANIMATION"
+    },
+    {
+      "slug": "anim-objects",
+      "name": "Object Animations",
+      "group": "ANIMATION"
+    },
+    {
+      "slug": "ui-icons",
+      "name": "Icons",
+      "group": "UI"
+    },
+    {
+      "slug": "ui-interface",
+      "name": "Interface",
+      "group": "UI"
+    }
+  ],
+  "assets": [
+    {
+      "slug": "animal.dog.character",
+      "name": "Dog (character)",
+      "category": "vocab-animals",
+      "type": "IMAGE",
+      "variant": "character",
+      "file": "vocabulary/animals/dog_character.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": true,
+      "tags": [
+        "animal",
+        "pet"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "animal.cat.character",
+      "name": "Cat (character)",
+      "category": "vocab-animals",
+      "type": "IMAGE",
+      "variant": "character",
+      "file": "vocabulary/animals/cat_character.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": true,
+      "tags": [
+        "animal",
+        "pet"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "animal.cow.character",
+      "name": "Cow (character)",
+      "category": "vocab-animals",
+      "type": "IMAGE",
+      "variant": "character",
+      "file": "vocabulary/animals/cow_character.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": true,
+      "tags": [
+        "animal",
+        "farm"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "animal.frog.character",
+      "name": "Frog (character)",
+      "category": "vocab-animals",
+      "type": "IMAGE",
+      "variant": "character",
+      "file": "vocabulary/animals/frog_character.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": true,
+      "tags": [
+        "animal",
+        "wild"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "fruit.apple.whole",
+      "name": "Apple (whole)",
+      "category": "vocab-fruits",
+      "type": "IMAGE",
+      "variant": "whole",
+      "file": "vocabulary/fruits/apple_whole.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "fruit"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "fruit.banana.whole",
+      "name": "Banana (whole)",
+      "category": "vocab-fruits",
+      "type": "IMAGE",
+      "variant": "whole",
+      "file": "vocabulary/fruits/banana_whole.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "fruit"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "fruit.strawberry.whole",
+      "name": "Strawberry (whole)",
+      "category": "vocab-fruits",
+      "type": "IMAGE",
+      "variant": "whole",
+      "file": "vocabulary/fruits/strawberry_whole.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "fruit"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "fruit.orange.whole",
+      "name": "Orange (whole)",
+      "category": "vocab-fruits",
+      "type": "IMAGE",
+      "variant": "whole",
+      "file": "vocabulary/fruits/orange_whole.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "fruit"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "fruit.grape.whole",
+      "name": "Grapes (whole)",
+      "category": "vocab-fruits",
+      "type": "IMAGE",
+      "variant": "whole",
+      "file": "vocabulary/fruits/grape_whole.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "fruit"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "object.star",
+      "name": "Star",
+      "category": "obj-collectibles",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "objects/collectibles/star.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "reward",
+        "collectible"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "object.trophy",
+      "name": "Trophy",
+      "category": "obj-collectibles",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "objects/collectibles/trophy.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "reward",
+        "collectible"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "ui.icon.times-table",
+      "name": "Times table icon",
+      "category": "ui-icons",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "ui/icons/times-table.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "icon",
+        "catalog"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "ui.icon.sleeping-moon",
+      "name": "Sleeping moon icon",
+      "category": "ui-icons",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "ui/icons/sleeping-moon.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "icon",
+        "catalog"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "ui.icon.spin-wheel",
+      "name": "Spin wheel icon",
+      "category": "ui-icons",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "ui/icons/spin-wheel.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "icon",
+        "catalog"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "ui.icon.memory-cards",
+      "name": "Memory cards icon",
+      "category": "ui-icons",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "ui/icons/memory-cards.svg",
+      "format": "svg",
+      "width": 120,
+      "height": 120,
+      "inlineRig": false,
+      "tags": [
+        "icon",
+        "catalog"
+      ],
+      "source": "SEED"
+    },
+    {
+      "slug": "ui.brand.hive-logo",
+      "name": "Hive Play logo",
+      "category": "ui-interface",
+      "type": "IMAGE",
+      "variant": null,
+      "file": "ui/interface/hive-logo.svg",
+      "format": "svg",
+      "width": 48,
+      "height": 48,
+      "inlineRig": false,
+      "tags": [
+        "brand",
+        "logo"
+      ],
+      "source": "SEED"
+    }
+  ],
+  "vocabularyCategories": [
+    {
+      "slug": "animals",
+      "name": "Animals",
+      "parent": null
+    },
+    {
+      "slug": "pets",
+      "name": "Pets",
+      "parent": "animals"
+    },
+    {
+      "slug": "farm-animals",
+      "name": "Farm Animals",
+      "parent": "animals"
+    },
+    {
+      "slug": "wild-animals",
+      "name": "Wild Animals",
+      "parent": "animals"
+    },
+    {
+      "slug": "fruits",
+      "name": "Fruits",
+      "parent": null
+    },
+    {
+      "slug": "food",
+      "name": "Food",
+      "parent": null
+    },
+    {
+      "slug": "transportation",
+      "name": "Transportation",
+      "parent": null
+    },
+    {
+      "slug": "school-supplies",
+      "name": "School Supplies",
+      "parent": null
+    },
+    {
+      "slug": "body-parts",
+      "name": "Body Parts",
+      "parent": null
+    },
+    {
+      "slug": "colors",
+      "name": "Colors",
+      "parent": null
+    },
+    {
+      "slug": "shapes",
+      "name": "Shapes",
+      "parent": null
+    },
+    {
+      "slug": "occupations",
+      "name": "Occupations",
+      "parent": null
+    },
+    {
+      "slug": "household-items",
+      "name": "Household Items",
+      "parent": null
+    },
+    {
+      "slug": "other",
+      "name": "Other",
+      "parent": null
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "Dog",
+      "slug": "dog",
+      "category": "pets",
+      "partOfSpeech": "noun",
+      "definition": "A friendly animal that people keep as a pet. Dogs bark.",
+      "example": "The dog is playing in the garden.",
+      "translation": "anjing",
+      "plural": "dogs",
+      "soundText": "Woof woof!",
+      "difficulty": 1,
+      "tags": [
+        "animal",
+        "pet"
+      ],
+      "syllables": 1,
+      "assets": [
+        {
+          "asset": "animal.dog.character",
+          "role": "character",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Cat",
+      "slug": "cat",
+      "category": "pets",
+      "partOfSpeech": "noun",
+      "definition": "A small furry pet that purrs and chases mice.",
+      "example": "The cat is sleeping on the sofa.",
+      "translation": "kucing",
+      "plural": "cats",
+      "soundText": "Meow!",
+      "difficulty": 1,
+      "tags": [
+        "animal",
+        "pet"
+      ],
+      "syllables": 1,
+      "assets": [
+        {
+          "asset": "animal.cat.character",
+          "role": "character",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Cow",
+      "slug": "cow",
+      "category": "farm-animals",
+      "partOfSpeech": "noun",
+      "definition": "A large farm animal that gives us milk.",
+      "example": "The cow eats grass in the field.",
+      "translation": "sapi",
+      "plural": "cows",
+      "soundText": "Moo!",
+      "difficulty": 1,
+      "tags": [
+        "animal",
+        "farm"
+      ],
+      "syllables": 1,
+      "assets": [
+        {
+          "asset": "animal.cow.character",
+          "role": "character",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Frog",
+      "slug": "frog",
+      "category": "wild-animals",
+      "partOfSpeech": "noun",
+      "definition": "A small green animal that jumps and lives near water.",
+      "example": "The frog jumps into the pond.",
+      "translation": "katak",
+      "plural": "frogs",
+      "soundText": "Ribbit!",
+      "difficulty": 1,
+      "tags": [
+        "animal",
+        "wild"
+      ],
+      "syllables": 1,
+      "assets": [
+        {
+          "asset": "animal.frog.character",
+          "role": "character",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Apple",
+      "slug": "apple",
+      "category": "fruits",
+      "partOfSpeech": "noun",
+      "definition": "A round fruit that can be red, green, or yellow.",
+      "example": "I eat an apple every day.",
+      "translation": "apel",
+      "plural": "apples",
+      "soundText": null,
+      "difficulty": 1,
+      "tags": [
+        "fruit"
+      ],
+      "syllables": 2,
+      "assets": [
+        {
+          "asset": "fruit.apple.whole",
+          "role": "whole",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Banana",
+      "slug": "banana",
+      "category": "fruits",
+      "partOfSpeech": "noun",
+      "definition": "A long yellow fruit with a soft inside.",
+      "example": "The monkey likes the banana.",
+      "translation": "pisang",
+      "plural": "bananas",
+      "soundText": null,
+      "difficulty": 1,
+      "tags": [
+        "fruit"
+      ],
+      "syllables": 3,
+      "assets": [
+        {
+          "asset": "fruit.banana.whole",
+          "role": "whole",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Strawberry",
+      "slug": "strawberry",
+      "category": "fruits",
+      "partOfSpeech": "noun",
+      "definition": "A small red fruit with tiny seeds on its skin.",
+      "example": "She put a strawberry on the cake.",
+      "translation": "stroberi",
+      "plural": "strawberries",
+      "soundText": null,
+      "difficulty": 2,
+      "tags": [
+        "fruit"
+      ],
+      "syllables": 3,
+      "assets": [
+        {
+          "asset": "fruit.strawberry.whole",
+          "role": "whole",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Orange",
+      "slug": "orange",
+      "category": "fruits",
+      "partOfSpeech": "noun",
+      "definition": "A round orange fruit with juicy pieces inside.",
+      "example": "I drink orange juice at breakfast.",
+      "translation": "jeruk",
+      "plural": "oranges",
+      "soundText": null,
+      "difficulty": 1,
+      "tags": [
+        "fruit"
+      ],
+      "syllables": 2,
+      "assets": [
+        {
+          "asset": "fruit.orange.whole",
+          "role": "whole",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "word": "Grape",
+      "slug": "grape",
+      "category": "fruits",
+      "partOfSpeech": "noun",
+      "definition": "A small round fruit that grows in bunches.",
+      "example": "These grapes are sweet.",
+      "translation": "anggur",
+      "plural": "grapes",
+      "soundText": null,
+      "difficulty": 1,
+      "tags": [
+        "fruit"
+      ],
+      "syllables": 1,
+      "assets": [
+        {
+          "asset": "fruit.grape.whole",
+          "role": "whole",
+          "primary": true
+        }
+      ]
+    }
+  ],
+  "sets": [
+    {
+      "name": "Pets, Farm and Wild Animals",
+      "description": "Four common animals for the youngest learners.",
+      "level": "Todler",
+      "published": true,
+      "words": [
+        "dog",
+        "cat",
+        "cow",
+        "frog"
+      ]
+    },
+    {
+      "name": "Fruits",
+      "description": "Five common fruits for counting practice.",
+      "level": "TK",
+      "published": true,
+      "words": [
+        "apple",
+        "banana",
+        "strawberry",
+        "orange",
+        "grape"
+      ]
+    }
+  ],
+  "usage": [
+    {
+      "game": "tap-animals",
+      "asset": "animal.dog.character",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "tap-animals",
+      "asset": "animal.cat.character",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "tap-animals",
+      "asset": "animal.cow.character",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "tap-animals",
+      "asset": "animal.frog.character",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "count-fruits",
+      "asset": "fruit.apple.whole",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "count-fruits",
+      "asset": "fruit.banana.whole",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "count-fruits",
+      "asset": "fruit.strawberry.whole",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "count-fruits",
+      "asset": "fruit.orange.whole",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "count-fruits",
+      "asset": "fruit.grape.whole",
+      "role": "vocabulary-image"
+    },
+    {
+      "game": "count-fruits",
+      "asset": "object.star",
+      "role": "reward"
+    },
+    {
+      "game": "times-table",
+      "asset": "object.star",
+      "role": "reward"
+    },
+    {
+      "game": "times-table",
+      "asset": "object.trophy",
+      "role": "reward"
+    },
+    {
+      "game": "catalog",
+      "asset": "animal.dog.character",
+      "role": "catalog-icon"
+    },
+    {
+      "game": "catalog",
+      "asset": "fruit.apple.whole",
+      "role": "catalog-icon"
+    },
+    {
+      "game": "catalog",
+      "asset": "ui.icon.times-table",
+      "role": "catalog-icon"
+    },
+    {
+      "game": "catalog",
+      "asset": "ui.icon.sleeping-moon",
+      "role": "catalog-icon"
+    },
+    {
+      "game": "catalog",
+      "asset": "ui.icon.spin-wheel",
+      "role": "catalog-icon"
+    },
+    {
+      "game": "catalog",
+      "asset": "ui.icon.memory-cards",
+      "role": "catalog-icon"
+    },
+    {
+      "game": "catalog",
+      "asset": "ui.brand.hive-logo",
+      "role": "brand"
+    }
+  ]
+}

@@ -7,20 +7,35 @@
 <main>
 <h1 class="rise">Tap the Animals</h1>
 <p class="sub rise" style="--i:1">Tap an animal to hear its name and its sound!</p>
+<div class="hv-bar"><div id="picker"></div><div id="note" class="hv-note" hidden></div></div>
 <section class="stage rise" style="--i:2"><div class="zoo" id="zoo"></div><div class="nm" id="nm" aria-live="polite"></div><div class="hint" id="snd" style="min-height:1.5em"></div></section></main>
 <script src="/art.js"></script>
-<script>const ZOO=[['dog','Dog','Woof woof!'],['cat','Cat','Meow!'],['cow','Cow','Moo!'],['frog','Frog','Ribbit!']];
-const nm=document.getElementById('nm'),zoo=document.getElementById('zoo'),snd=document.getElementById('snd');
-ZOO.forEach(([k,n,so],i)=>{
-  const b=document.createElement('button');b.className='tile';b.setAttribute('aria-label',n);b.innerHTML=ART[k];
-  b.querySelector('.pet').style.setProperty('--i',i);
-  b.onanimationend=e=>{if(e.animationName==='squash')b.classList.remove('tap')};
-  b.onclick=()=>{
-    b.classList.remove('tap');void b.offsetWidth;b.classList.add('tap');
-    nm.textContent='';[...n].forEach((c,j)=>{const s=document.createElement('span');s.textContent=c;s.style.setProperty('--k',j);nm.appendChild(s)});
-    snd.textContent=so;
-    if(window.HP){HP.pop();HP.say(n+'. '+so);HP.spark(b)}
-  };
-  zoo.appendChild(b);
-});</script>
+<script src="/hive-vocab.js"></script>
+<script>const GAME='tap-animals';
+/* Kata bawaan: dipakai hanya bila perpustakaan kosakata tidak tersedia. */
+const FALLBACK=[{word:'Dog',soundText:'Woof woof!',art:'dog'},{word:'Cat',soundText:'Meow!',art:'cat'},{word:'Cow',soundText:'Moo!',art:'cow'},{word:'Frog',soundText:'Ribbit!',art:'frog'}];
+const $=id=>document.getElementById(id);
+const nm=$('nm'),zoo=$('zoo'),snd=$('snd');let run=0;
+async function mulai(setId){
+  const my=++run;
+  const res=await HiveVocab.load({game:GAME,category:'animals',set:setId||'',fallback:FALLBACK,limit:12});
+  const imgs=await Promise.all(res.words.map(async w=>(res.source==='library'?await HiveVocab.svg(w,['character','whole']):ART[w.art])||HiveVocab.placeholder(w.word)));
+  if(my!==run)return;
+  HiveVocab.notice($('note'),res);
+  zoo.textContent='';nm.textContent='';snd.textContent='';
+  res.words.forEach((w,i)=>{
+    const n=w.word,so=w.soundText||'';
+    const b=document.createElement('button');b.className='tile';b.setAttribute('aria-label',n);b.innerHTML=imgs[i];
+    const pet=b.querySelector('.pet')||b.firstElementChild;if(pet)pet.style.setProperty('--i',i);
+    b.onanimationend=e=>{if(e.animationName==='squash')b.classList.remove('tap')};
+    b.onclick=()=>{
+      b.classList.remove('tap');void b.offsetWidth;b.classList.add('tap');
+      nm.textContent='';[...n].forEach((c,j)=>{const s=document.createElement('span');s.textContent=c;s.style.setProperty('--k',j);nm.appendChild(s)});
+      snd.textContent=so;
+      if(window.HP){HP.pop();HP.say(so?n+'. '+so:n);HP.spark(b)}
+    };
+    zoo.appendChild(b);
+  });
+}
+HiveVocab.picker($('picker'),{game:GAME,category:'animals',onChange:mulai}).then(mulai);</script>
 <script src="/hive.js" defer></script></body></html>

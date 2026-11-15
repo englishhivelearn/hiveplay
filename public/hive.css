@@ -1,3 +1,4 @@
+
 :root{--bg:#f5f4ff;--ink:#1a1b4b;--mute:#5d5f95;--card:rgba(255,255,255,.7);--line:rgba(26,27,75,.09);--shadow:0 24px 50px -24px rgba(70,60,160,.4);
 --b1:#8b7bff;--b2:#ff7ab6;--b3:#ffc14d;--b4:#3fe0c5;--ease:cubic-bezier(.2,.8,.2,1);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -216,3 +217,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--b4);outline-offset:
 @keyframes flick{40%{transform:translateX(-50%) rotate(-16deg)}}
 .wheelbox.tegang svg{animation:denyut .7s ease-in-out infinite}
 @keyframes denyut{50%{filter:drop-shadow(0 0 28px #ffc14d) drop-shadow(0 14px 20px rgba(70,60,160,.3))}}
+/* kosakata dari perpustakaan */
+.hv-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin:0 0 14px}
+.hv-label{display:inline-flex;align-items:center;gap:8px;color:var(--mute);font-size:16px}
+.hv-label select{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 12px;border-radius:12px;font:inherit}
+.hv-label select:focus-visible{outline:3px solid var(--b4);outline-offset:2px}
+.hv-note{padding:8px 16px;border-radius:14px;background:rgba(255,193,77,.25);border:1px solid rgba(255,193,77,.6);color:var(--ink);font-size:15px;max-width:640px}
+.hv-note[hidden]{display:none}
