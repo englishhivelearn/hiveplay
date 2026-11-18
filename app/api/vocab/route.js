@@ -1,4 +1,4 @@
-import { isStaff } from '@/lib/auth';
+import { isStaff, isAdmin } from '@/lib/auth';
 import { json, fail } from '@/lib/apiHelpers.mjs';
 import { listVocabulary } from '@/lib/services/vocabularyService.mjs';
 import { checkCompatibility } from '@/lib/services/gameAssetService.mjs';
@@ -15,6 +15,7 @@ export async function GET(req) {
       difficulty: u.get('difficulty') ? +u.get('difficulty') : undefined,
       tag: u.get('tag') || undefined, set: u.get('set') || undefined, letter: u.get('letter') || undefined,
       limit: Math.min(+u.get('limit') || 200, 500),
+      status: (await isAdmin()) ? (u.get('status') || 'ACTIVE') : 'ACTIVE',
     });
     const game = u.get('game');
     return json({ words, count: words.length, check: game ? checkCompatibility(game, words) : null });

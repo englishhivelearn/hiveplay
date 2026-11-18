@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { isGuru } from '@/lib/auth';
+import { isStaff } from '@/lib/auth';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(_req, { params }) {
-  if (!(await isGuru())) return new Response(null, { status: 303, headers: { Location: '/login' } });
+  if (!(await isStaff())) return new Response(null, { status: 303, headers: { Location: '/login' } });
   const { file } = await params;
   if (!/^[a-z0-9-]+\.html$/.test(file)) return new Response('Tidak ditemukan', { status: 404 });
   try {

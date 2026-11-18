@@ -32,7 +32,8 @@ async function mulai(setId){
       b.classList.remove('tap');void b.offsetWidth;b.classList.add('tap');
       nm.textContent='';[...n].forEach((c,j)=>{const s=document.createElement('span');s.textContent=c;s.style.setProperty('--k',j);nm.appendChild(s)});
       snd.textContent=so;
-      if(window.HP){HP.pop();HP.say(so?n+'. '+so:n);HP.spark(b)}
+      if(window.HP){HP.pop();HP.spark(b)}
+      HiveVocab.say(w,so?n+'. '+so:n);
     };
     zoo.appendChild(b);
   });

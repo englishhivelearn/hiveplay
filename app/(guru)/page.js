@@ -1,4 +1,4 @@
-import { requireGuru } from '@/lib/auth';
+import { requireGuru, isAdmin } from '@/lib/auth';
 import { GAMES } from '@/lib/games';
 import { LOGO } from '@/lib/art';
 import Katalog from './Katalog';
@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   await requireGuru(); // belum login -> dialihkan ke /login
+  const admin = await isAdmin();
   return (
     <>
       <header>
@@ -18,7 +19,7 @@ export default async function Home() {
       </header>
       <main>
         <Katalog games={GAMES} />
-        <form method="post" action="/api/logout" className="out"><button className="btn alt">Keluar</button></form>
+        <form method="post" action="/api/logout" className="out">{admin && <a className="back" href="/admin" style={{ marginRight: 12 }}>Admin dashboard</a>}<button className="btn alt">Keluar</button></form>
       </main>
     </>
   );

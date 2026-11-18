@@ -70,5 +70,18 @@
     lab.appendChild(sel); el.appendChild(lab);
     return sel.value;
   }
-  window.HiveVocab = { load, sets, svg, assetSvg, placeholder, notice, picker };
+  /** Mengucapkan kata: memutar rekaman dari perpustakaan bila ada, kalau tidak (atau gagal) memakai suara bawaan browser. */
+  function say(word, text) {
+    const tts = (t) => { if (t && window.HP && window.HP.say) window.HP.say(t); };
+    const a = word && word.assets && word.assets.pronunciation;
+    if (!a) { tts(text); return; }
+    try {
+      const el = new Audio(a.url);
+      if (word.soundText) el.addEventListener('ended', () => tts(word.soundText));
+      el.addEventListener('error', () => tts(text));
+      const p = el.play();
+      if (p && p.catch) p.catch(() => tts(text));
+    } catch (e) { tts(text); }
+  }
+  window.HiveVocab = { load, sets, svg, assetSvg, placeholder, notice, picker, say };
 })();

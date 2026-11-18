@@ -7,12 +7,16 @@
     "build": "next build",
     "start": "node scripts/prestart.mjs && next start",
     "db:migrate": "node scripts/migrate.mjs",
-    "db:seed": "node scripts/seed.mjs"
+    "db:seed": "node scripts/seed.mjs",
+    "postinstall": "prisma skills sync || exit 0"
   },
   "dependencies": {
     "next": "15.5.29",
+    "pg": "8.23.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "pg": "8.23.1"
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.3"
   }
 }
