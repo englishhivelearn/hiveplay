@@ -1,0 +1,476 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Animal World · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css">
+<style>
+.aw-ctl{display:flex;gap:10px 18px;flex-wrap:wrap;align-items:center;justify-content:center;margin:0 0 12px}
+.aw-grp{display:inline-flex;align-items:center;gap:8px;color:var(--mute);font-size:15px}
+.aw-grp label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.aw-seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.aw-seg button{border:0;background:var(--card);color:var(--ink);padding:8px 16px;font:inherit;cursor:pointer}
+.aw-seg button.on{background:linear-gradient(100deg,var(--b1),var(--b2));color:#fff}
+label.btn{display:inline-block;cursor:pointer}
+.aw-note{min-height:1.5em;text-align:center;color:var(--mute);font-size:16px;margin:0 0 8px}
+.aw-note.err{color:#e0405a}.aw-note.ok{color:#12906a}
+.aw-wrap{max-width:1100px;margin:0 auto;background:var(--bg)}
+.aw-wrap:fullscreen{max-width:none;width:100vw;height:100vh;display:flex;flex-direction:column;padding:8px}
+.aw-wrap:fullscreen .aw-stage{aspect-ratio:auto;flex:1;min-height:0}
+.aw-wrap:-webkit-full-screen{max-width:none;width:100vw;height:100vh;display:flex;flex-direction:column;padding:8px}
+.aw-wrap:-webkit-full-screen .aw-stage{aspect-ratio:auto;flex:1;min-height:0}
+.aw-stage{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:22px;border:1px solid var(--line);box-shadow:var(--shadow);--bg1:#8fd8ff;background:var(--bg1)}
+.aw-stage[data-t=land]{background:linear-gradient(#7fd0ff 0%,#d4f1ff 54%,#86d268 54%,#5cae48 100%)}
+.aw-stage[data-t=air]{background:linear-gradient(#3f9ae8 0%,#8fd0ff 55%,#e6f7ff 100%)}
+.aw-stage[data-t=sea]{background:linear-gradient(#63ccff 0%,#2b8fe3 38%,#173f92 100%)}
+.aw-stage[data-t=space]{background:radial-gradient(circle at 70% 25%,#2d2a6e,#0b0c2b 70%)}
+.aw-deco,.aw-fx,.aw-animals{position:absolute;inset:0}
+.aw-deco{pointer-events:none;overflow:hidden}.aw-fx{pointer-events:none;overflow:hidden}
+.aw-animals{z-index:3}
+.aw-a{position:absolute;left:0;top:0;padding:0;margin:0;border:0;background:none;cursor:pointer;will-change:transform;color:inherit;font:inherit}
+.aw-a[hidden]{display:none}
+.aw-a:focus-visible{outline:3px solid var(--b4);outline-offset:4px;border-radius:12px}
+.aw-body{display:block;will-change:transform}
+.aw-img{display:block;height:var(--h,80px);width:auto;max-width:none;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.28))}
+.aw-name{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;padding:1px 12px;border-radius:99px;background:rgba(255,255,255,.92);color:#1a1b4b;font-family:Fredoka,sans-serif;font-weight:700;font-size:clamp(12px,1.9vw,20px);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.aw-a.tapped .aw-name{background:#ffe28a}
+.aw-sun{position:absolute;right:7%;top:7%;width:11%;aspect-ratio:1;border-radius:50%;background:#ffe28a;box-shadow:0 0 0 14px rgba(255,226,138,.35),0 0 60px 20px rgba(255,226,138,.55)}
+.aw-cloud{position:absolute;height:7%;background:#fff;border-radius:99px;opacity:.92;animation:awdrift 70s linear infinite}
+.aw-cloud::before,.aw-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.aw-cloud::before{width:42%;height:150%;left:14%;top:-70%}.aw-cloud::after{width:34%;height:120%;left:48%;top:-45%}
+.aw-cloud.c1{width:15%;top:12%;left:-20%}.aw-cloud.c2{width:11%;top:26%;left:-20%;animation-duration:95s;animation-delay:-30s}.aw-cloud.c3{width:13%;top:6%;left:-20%;animation-duration:80s;animation-delay:-55s}
+.aw-hills{position:absolute;left:0;right:0;top:34%;height:22%;width:100%}
+.aw-grass{position:absolute;left:0;right:0;bottom:0;height:10%;width:100%;opacity:.55}
+.aw-rays{position:absolute;inset:0;background:repeating-linear-gradient(105deg,rgba(255,255,255,.10) 0 40px,transparent 40px 120px);animation:awsway 9s ease-in-out infinite alternate}
+.aw-seabed{position:absolute;left:0;right:0;bottom:0;height:16%;width:100%}
+.aw-weed{position:absolute;bottom:2%;width:3%;height:22%;transform-origin:50% 100%;animation:awsway 4s ease-in-out infinite alternate}
+.aw-star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:awtw 3s ease-in-out infinite}
+.aw-planet{position:absolute;left:8%;top:14%;width:13%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffb199,#d4505f 70%);box-shadow:0 0 30px rgba(255,120,120,.35)}
+.aw-moon{position:absolute;right:10%;bottom:12%;width:7%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#b9bfd9 75%)}
+.aw-bubble{position:absolute;bottom:-4%;border-radius:50%;border:2px solid rgba(255,255,255,.75);background:rgba(255,255,255,.18);animation:awrise 6s linear forwards}
+.aw-drop{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(10,12,40,.55);color:#fff;font-family:Fredoka,sans-serif;font-size:clamp(22px,4vw,40px);border:4px dashed #fff;border-radius:22px}
+.aw-drop[hidden],.aw-empty[hidden]{display:none}
+.aw-empty{position:absolute;z-index:10;left:50%;bottom:4%;transform:translateX(-50%);padding:6px 18px;border-radius:99px;background:rgba(255,255,255,.9);color:#1a1b4b;font-family:Fredoka,sans-serif;font-size:clamp(14px,2vw,20px);text-align:center}
+.aw-h2{font-family:Fredoka,sans-serif;font-size:22px;margin:26px 0 10px;text-align:center}
+.aw-tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:1100px;margin:0 auto}
+.aw-thumb{display:flex;flex-direction:column;align-items:center;gap:2px;width:96px;padding:8px 6px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.aw-thumb img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:repeating-conic-gradient(#e6e6f5 0 25%,#fff 0 50%) 0 0/12px 12px}
+.aw-thumb.dim{opacity:.45}.aw-thumb b{font-family:Fredoka,sans-serif;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aw-thumb span{color:var(--mute);font-size:12px}
+.aw-priv{max-width:700px;margin:18px auto 0;text-align:center;color:var(--mute);font-size:14px}
+.aw-ov{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:rgba(10,12,40,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.aw-modal{width:min(640px,100%);max-height:92vh;overflow:auto;border-radius:24px;background:var(--bg);border:1px solid var(--line);box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+.aw-mh{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+.aw-mh h2{margin:0;font-size:22px;font-family:Fredoka,sans-serif}
+.aw-x{border:0;background:none;color:var(--ink);font-size:30px;line-height:1;cursor:pointer}
+.aw-mb{padding:16px 20px 20px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:18px}
+.aw-prev{display:grid;place-items:center;min-height:200px;padding:10px;border-radius:16px;background:repeating-conic-gradient(#e6e6f5 0 25%,#fff 0 50%) 0 0/16px 16px}
+.aw-prev img{max-width:100%;max-height:260px;object-fit:contain}
+.aw-form{display:grid;gap:12px}.aw-form label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--mute)}
+.aw-form input:not([type=checkbox]):not([type=range]),.aw-form select{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 12px;border-radius:12px;font:inherit;width:100%}
+.aw-form input[type=range]{width:100%}.aw-form label.row{flex-direction:row;align-items:center;gap:8px}
+.aw-act{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+.btn.sm{padding:7px 14px;font-size:15px;border-radius:12px}.btn.danger{background:linear-gradient(100deg,#ff7a8a,#ff5a6e)}
+@keyframes awdrift{to{transform:translateX(900%)}}
+@keyframes awsway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+@keyframes awtw{50%{opacity:.25}}
+@keyframes awrise{to{transform:translateY(-120vh);opacity:.2}}
+@media (max-width:640px){.aw-mb{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.aw-cloud,.aw-rays,.aw-weed,.aw-star{animation:none}}
+</style></head>
+<body>
+<div class="top"><a class="back" href="/">← Back</a></div>
+<main>
+<h1 class="rise">Animal World</h1>
+<p class="sub rise" style="--i:1">Take photos of your students’ animal drawings and watch them come alive. Pick a world: land, air, sea, or space.</p>
+
+<div class="aw-ctl rise" style="--i:2">
+  <div class="aw-grp">World <span class="aw-seg" id="segTheme" role="group" aria-label="World"><button data-v="land">Land</button><button data-v="air">Air</button><button data-v="sea">Sea</button><button data-v="space">Space</button></span></div>
+  <div class="aw-grp"><label><input type="checkbox" id="showNames" checked> Show names</label></div>
+  <div class="aw-grp"><label><input type="checkbox" id="showAll"> Show every animal in every world</label></div>
+</div>
+<div class="aw-ctl rise" style="--i:3">
+  <label class="btn" for="file">Add photos</label><input id="file" type="file" accept="image/*" multiple hidden>
+  <label class="btn alt" for="cam">Take a photo</label><input id="cam" type="file" accept="image/*" capture="environment" hidden>
+  <button class="btn alt" id="full" hidden>Fullscreen</button>
+  <button class="btn alt" id="clear">Clear all</button>
+</div>
+<div class="aw-note" id="note" aria-live="polite"></div>
+
+<section class="aw-wrap" id="wrap">
+  <div class="aw-stage" id="stage" data-t="land" role="group" aria-label="Animal world">
+    <div class="aw-deco" id="deco"></div><div class="aw-fx" id="fx"></div>
+    <div class="aw-animals" id="animals"></div>
+    <div class="aw-empty" id="empty" hidden></div>
+    <div class="aw-drop" id="drop" hidden>Drop photos here</div>
+  </div>
+</section>
+
+<h2 class="aw-h2" id="trayTitle">Your animals</h2>
+<div class="aw-tray" id="tray"></div>
+<p class="aw-priv">Photos stay on this device. They are never uploaded to the server. On a shared computer, press “Clear all” when you are done.</p>
+</main>
+<div id="modalRoot"></div>
+<script src="/art.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const MAX_ANIMALS = 40, MAX_FILE = 12 * 1024 * 1024, OUT = 480;
+
+/* CUTOUT-START */
+/* Memotong latar kertas dari foto gambar. Fungsi murni (tanpa DOM) supaya bisa diuji.
+   src: RGBA (Uint8ClampedArray), tol: kekuatan 5 sampai 60. Latar = piksel yang tersambung ke tepi foto dan mirip warna kertas. */
+function cutoutRGBA(src, w, h, tol) {
+  const N = w * h, med = (arr) => { arr.sort((a, b) => a - b); return arr[arr.length >> 1]; };
+  const rs = [], gs = [], bs = [];
+  const sample = (x, y) => { const o = (y * w + x) * 4; rs.push(src[o]); gs.push(src[o + 1]); bs.push(src[o + 2]); };
+  for (let x = 0; x < w; x++) { sample(x, 0); sample(x, h - 1); }
+  for (let y = 1; y < h - 1; y++) { sample(0, y); sample(w - 1, y); }
+  const R = med(rs), G = med(gs), B = med(bs);
+  const tolG = Math.min(150, tol * 2.2), tolS = Math.max(10, tol * 0.5);
+  const dBg = (i) => { const o = i * 4; return Math.max(Math.abs(src[o] - R), Math.abs(src[o + 1] - G), Math.abs(src[o + 2] - B)); };
+  const dPix = (i, j) => { const a = i * 4, b = j * 4; return Math.max(Math.abs(src[a] - src[b]), Math.abs(src[a + 1] - src[b + 1]), Math.abs(src[a + 2] - src[b + 2])); };
+  const bg = new Uint8Array(N), q = new Int32Array(N); let qh = 0, qt = 0;
+  const seed = (i) => { if (!bg[i] && dBg(i) <= tolG) { bg[i] = 1; q[qt++] = i; } };
+  for (let x = 0; x < w; x++) { seed(x); seed((h - 1) * w + x); }
+  for (let y = 0; y < h; y++) { seed(y * w); seed(y * w + w - 1); }
+  while (qh < qt) {
+    const p = q[qh++], x = p % w, y = (p / w) | 0;
+    const tryN = (n) => { if (!bg[n] && dBg(n) <= tolG && dPix(n, p) <= tolS) { bg[n] = 1; q[qt++] = n; } };
+    if (x > 0) tryN(p - 1); if (x < w - 1) tryN(p + 1); if (y > 0) tryN(p - w); if (y < h - 1) tryN(p + w);
+  }
+  /* buang bintik kecil yang terpisah dari gambar utama (debu, noda) */
+  const lab = new Int32Array(N), sizes = [0]; let nl = 0;
+  for (let s = 0; s < N; s++) {
+    if (bg[s] || lab[s]) continue;
+    nl++; let cnt = 0; qh = 0; qt = 0; q[qt++] = s; lab[s] = nl;
+    while (qh < qt) {
+      const p = q[qh++]; cnt++; const x = p % w, y = (p / w) | 0;
+      const t = (n) => { if (!bg[n] && !lab[n]) { lab[n] = nl; q[qt++] = n; } };
+      if (x > 0) t(p - 1); if (x < w - 1) t(p + 1); if (y > 0) t(p - w); if (y < h - 1) t(p + w);
+    }
+    sizes.push(cnt);
+  }
+  const biggest = Math.max(0, ...sizes), keepMin = Math.max(N * 0.003, biggest * 0.05);
+  for (let i = 0; i < N; i++) if (!bg[i] && sizes[lab[i]] < keepMin) bg[i] = 1;
+  /* tepi lembut: piksel tepi yang mirip kertas dibuat setengah transparan (menghilangkan lingkaran putih) */
+  const out = new Uint8ClampedArray(N * 4); let minX = w, minY = h, maxX = -1, maxY = -1, solid = 0;
+  for (let i = 0; i < N; i++) {
+    const o = i * 4, x = i % w, y = (i / w) | 0;
+    out[o] = src[o]; out[o + 1] = src[o + 1]; out[o + 2] = src[o + 2];
+    let a = bg[i] ? 0 : 255;
+    if (!bg[i]) {
+      const edge = (x > 0 && bg[i - 1]) || (x < w - 1 && bg[i + 1]) || (y > 0 && bg[i - w]) || (y < h - 1 && bg[i + w]);
+      if (edge) a = Math.round(255 * clamp((dBg(i) - tolG * 0.45) / (tolG * 0.6), 0, 1));
+    }
+    out[o + 3] = a;
+    if (a > 20) { solid++; if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+  }
+  const frac = solid / N;
+  if (maxX < 0 || frac < 0.01) return { empty: true, reason: 'nothing' };
+  const pad = 2, x0 = Math.max(0, minX - pad), y0 = Math.max(0, minY - pad), x1 = Math.min(w - 1, maxX + pad), y1 = Math.min(h - 1, maxY + pad);
+  const cw = x1 - x0 + 1, ch = y1 - y0 + 1, crop = new Uint8ClampedArray(cw * ch * 4);
+  for (let y = 0; y < ch; y++) crop.set(out.subarray(((y + y0) * w + x0) * 4, ((y + y0) * w + x1 + 1) * 4), y * cw * 4);
+  return { data: crop, w: cw, h: ch, frac, noBackground: frac > 0.97, largeArea: frac > 0.6 };
+}
+/* CUTOUT-END */
+
+/* ---------- gambar & kanvas ---------- */
+let CANVAS_OK = null;
+function canvasOK() {
+  if (CANVAS_OK === null) { try { const c = document.createElement('canvas'); CANVAS_OK = !!(c.getContext && c.getContext('2d')); } catch (e) { CANVAS_OK = false; } }
+  return CANVAS_OK;
+}
+const readURL = (file) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(new Error('read')); r.readAsDataURL(file); });
+const loadImg = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('decode')); i.src = src; });
+function drawScaled(img, max) {
+  const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height, k = Math.min(1, max / Math.max(iw, ih));
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(iw * k)); c.height = Math.max(1, Math.round(ih * k));
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); return c;
+}
+function shrink(cv, max) {
+  const k = Math.min(1, max / Math.max(cv.width, cv.height)); if (k === 1) return cv;
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(cv.width * k)); c.height = Math.max(1, Math.round(cv.height * k));
+  c.getContext('2d').drawImage(cv, 0, 0, c.width, c.height); return c;
+}
+/* Mengembalikan { img (PNG), ar (lebar/tinggi), warn } dari kanvas sumber. */
+function makeCutout(srcCv, remove, tol) {
+  if (!remove) { const s = shrink(srcCv, OUT); return { img: s.toDataURL('image/png'), ar: s.width / s.height }; }
+  const id = srcCv.getContext('2d').getImageData(0, 0, srcCv.width, srcCv.height);
+  const r = cutoutRGBA(id.data, srcCv.width, srcCv.height, tol);
+  if (r.empty) { const s = shrink(srcCv, OUT); return { img: s.toDataURL('image/png'), ar: s.width / s.height, warn: 'Nothing was left after removing the background, so the whole photo is used. Try a lower cut-out strength.' }; }
+  const c = document.createElement('canvas'); c.width = r.w; c.height = r.h;
+  c.getContext('2d').putImageData(new ImageData(r.data, r.w, r.h), 0, 0);
+  const s = shrink(c, OUT);
+  return { img: s.toDataURL('image/png'), ar: s.width / s.height, warn: r.noBackground ? 'The background could not be separated from the drawing. Use plain, evenly lit paper, or change the cut-out strength.' : r.largeArea ? 'Some of the paper may still be showing. Open the animal and raise the cut-out strength, or photograph it on plain, evenly lit paper.' : '' };
+}
+async function processFile(file, remove, tol) {
+  if (!canvasOK()) { const u = await readURL(file); return { img: u, orig: u, ar: 1, warn: 'This browser cannot remove backgrounds, so the whole photo is used.' }; }
+  const url = await readURL(file), cv = drawScaled(await loadImg(url), 900);
+  return { ...makeCutout(cv, remove, tol), orig: cv.toDataURL('image/jpeg', 0.85) };
+}
+async function reprocess(a) {
+  if (!canvasOK() || !a.orig) return { img: a.img, ar: a.ar };
+  return makeCutout(drawScaled(await loadImg(a.orig), 900), a.remove, a.tol);
+}
+
+/* ---------- penyimpanan di browser (IndexedDB) ---------- */
+const DB = { ready: null, ok: false };
+function dbOpen() {
+  if (!window.indexedDB) return Promise.reject(new Error('no idb'));
+  return new Promise((res, rej) => { const r = indexedDB.open('hiveplay-animal-world', 1); r.onupgradeneeded = () => r.result.createObjectStore('animals', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+function idb(mode, fn) {
+  return DB.ready.then((db) => new Promise((res, rej) => { const tx = db.transaction('animals', mode), req = fn(tx.objectStore('animals')); tx.oncomplete = () => res(req && req.result); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error); }));
+}
+const rec = (a) => ({ id: a.id, name: a.name, habitat: a.habitat, faces: a.faces, scale: a.scale, tol: a.tol, remove: a.remove, img: a.img, orig: a.orig, ar: a.ar, created: a.created });
+let saveWarned = false;
+function persist(fn) { if (!DB.ok) return; fn().catch(() => { if (!saveWarned) { saveWarned = true; say('Could not save on this device (storage may be full). Your animals will stay until you close this page.', 'err'); } }); }
+const saveAnimal = (a) => { if (a.deleted) return; persist(() => idb('readwrite', (s) => s.put(rec(a)))); }; /* hewan yang sudah dihapus tidak boleh disimpan lagi */
+const timers = new Map();
+function saveSoon(a) { clearTimeout(timers.get(a.id)); timers.set(a.id, setTimeout(() => saveAnimal(a), 300)); }
+
+/* ---------- dunia, hewan contoh ---------- */
+const THEMES = {
+  land: { label: 'Land', habitat: 'land', move: 'walk', band: [0.6, 0.9] },
+  air: { label: 'Air', habitat: 'air', move: 'fly', band: [0.1, 0.8] },
+  sea: { label: 'Sea', habitat: 'sea', move: 'swim', band: [0.12, 0.84] },
+  space: { label: 'Space', habitat: 'any', move: 'float', band: [0.1, 0.9] },
+};
+const HAB = { land: 'Land', air: 'Air', sea: 'Sea', any: 'Any world' };
+const svgUrl = (s) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const FISH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80"><path d="M10 40Q40 4 80 24L112 6V74L80 56Q40 76 10 40Z" fill="#ff8a3d"/><circle cx="34" cy="36" r="5" fill="#fff"/><circle cx="35" cy="36" r="2.5" fill="#222"/><path d="M52 24Q60 40 52 56" stroke="#ffd0a0" stroke-width="4" fill="none"/></svg>';
+const BIRD = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90"><path d="M18 52Q36 22 68 36Q94 26 108 46Q94 60 68 60Q46 76 18 52Z" fill="#5fb3ff"/><path d="M40 44Q62 18 84 38Q64 50 40 44Z" fill="#2f86e0"/><path d="M108 46L120 42L110 52Z" fill="#ffc14d"/><circle cx="94" cy="42" r="3.4" fill="#222"/></svg>';
+const SAMPLES = () => [
+  ['Dog', 'land', 'right', svgUrl(ART.dog)], ['Cat', 'land', 'right', svgUrl(ART.cat)], ['Cow', 'land', 'right', svgUrl(ART.cow)],
+  ['Frog', 'any', 'right', svgUrl(ART.frog)], ['Fish', 'sea', 'left', svgUrl(FISH)], ['Bird', 'air', 'right', svgUrl(BIRD)],
+].map(([name, habitat, faces, img], i) => ({ id: 'sample-' + i, name, habitat, faces, scale: 1, tol: 28, remove: false, img, orig: null, ar: 1, created: 0, sample: true }));
+
+const S = { theme: 'land', showNames: true, showAll: false, list: [], samples: [], editing: null };
+try { Object.assign(S, JSON.parse(localStorage.getItem('hp_aw') || '{}')); } catch (e) {}
+if (!THEMES[S.theme]) S.theme = 'land';
+const savePrefs = () => { try { localStorage.setItem('hp_aw', JSON.stringify({ theme: S.theme, showNames: S.showNames, showAll: S.showAll })); } catch (e) {} };
+const stage = $('stage'), layer = $('animals');
+const shown = () => (S.list.length ? S.list : S.samples);
+const visible = (a) => S.showAll || S.theme === 'space' || a.habitat === 'any' || a.habitat === THEMES[S.theme].habitat;
+function metrics() { const r = stage.getBoundingClientRect(); return { w: r.width || 1000, h: r.height || 562 }; }
+function say_(msg, type) { const n = $('note'); n.textContent = msg || ''; n.className = 'aw-note' + (type ? ' ' + type : ''); }
+function say(msg, type) { say_(msg, type); }
+
+/* ---------- elemen hewan ---------- */
+function build(a) {
+  const el = document.createElement('button'); el.className = 'aw-a'; el.type = 'button';
+  const body = document.createElement('span'); body.className = 'aw-body';
+  const img = document.createElement('img'); img.className = 'aw-img'; img.alt = ''; img.draggable = false; img.src = a.img;
+  img.addEventListener('load', () => { if (img.naturalWidth && img.naturalHeight) a.ar = img.naturalWidth / img.naturalHeight; });
+  const nm = document.createElement('span'); nm.className = 'aw-name';
+  body.appendChild(img); el.appendChild(body); el.appendChild(nm);
+  el.addEventListener('click', () => react(a));
+  a.el = el; a.body = body; a.img_ = img; a.nm_ = nm; labelOf(a);
+  layer.appendChild(el); reset(a, metrics());
+}
+function labelOf(a) { a.nm_.textContent = a.name; a.nm_.hidden = !(S.showNames && a.name); a.el.setAttribute('aria-label', a.name || 'Animal'); }
+function reset(a, m) {
+  const th = THEMES[S.theme], lo = m.h * th.band[0], hi = m.h * th.band[1];
+  a.dir = Math.random() < 0.5 ? -1 : 1; a.t = rand(0, 20); a.state = 'move'; a.timer = rand(2, 6); a.sp = a.sp || rand(0.75, 1.25); a.ph = a.ph || rand(0, 6.28);
+  a.react = 0; a.rot = 0; a.off = 0; a.sy = 1; a.depth = 1; a.tx = null; a.dart = 0; a.h = m.h * 0.17 * a.scale;
+  a.x = rand(m.w * 0.12, m.w * 0.88); a.y = rand(lo, hi); a.ty = a.y;
+  a.vx = a.dir * m.w * 0.05; a.vy = 0; a.spin = rand(-25, 25);
+  if (th.move === 'float') { a.vx = (Math.random() < 0.5 ? -1 : 1) * rand(0.015, 0.04) * m.w; a.vy = (Math.random() < 0.5 ? -1 : 1) * rand(0.012, 0.035) * m.h; } /* kecepatan minimum: tidak ada hewan yang diam */
+}
+function applyVisibility() {
+  const m = metrics(); let n = 0;
+  shown().forEach((a) => { const v = visible(a); if (v && a.el.hidden) reset(a, m); a.el.hidden = !v; if (v) n++; });
+  S.list.concat(S.samples).forEach((a) => { if (a.el && !shown().includes(a)) a.el.hidden = true; });
+  const e = $('empty');
+  if (!shown().length) { e.hidden = false; e.textContent = 'Add photos of your students’ drawings to start.'; }
+  else if (!n) { e.hidden = false; e.textContent = 'No ' + THEMES[S.theme].label.toLowerCase() + ' animals yet. Change an animal’s world, or tick “Show every animal in every world”.'; }
+  else if (!S.list.length) { e.hidden = false; e.textContent = 'These are sample animals. Press “Add photos” to bring your own drawings to life.'; }
+  else e.hidden = true;
+  renderTray();
+}
+
+/* ---------- gerak ---------- */
+function step(a, dt, m) {
+  const th = THEMES[S.theme], lo = m.h * th.band[0], hi = m.h * th.band[1];
+  a.t += dt; if (a.react > 0) a.react = Math.max(0, a.react - dt);
+  a.h = m.h * 0.17 * a.scale * (a.depth || 1);
+  const halfW = (a.h * a.ar) / 2, halfH = a.h / 2, pulse = 1 + (a.react > 0 ? 0.22 * Math.sin(Math.PI * Math.min(1, a.react / 0.6)) : 0);
+  if (th.move === 'walk') {
+    if (a.state === 'pause') { a.timer -= dt; if (a.timer <= 0) { a.state = 'move'; a.timer = rand(3, 8); if (Math.random() < 0.4) a.dir *= -1; a.ty = rand(lo, hi); } }
+    else { a.x += a.dir * m.w * 0.055 * a.sp * dt * (1 + a.react * 2); a.timer -= dt; if (a.timer <= 0) { a.state = 'pause'; a.timer = rand(1, 2.5); } a.y += (a.ty - a.y) * Math.min(1, dt * 0.6); }
+    const mv = a.state === 'move', hop = mv ? Math.abs(Math.sin(a.t * 5 * a.sp)) : 0;
+    a.off = -hop * a.h * 0.14 - (a.react > 0 ? Math.sin(Math.PI * (1 - a.react / 0.6)) * a.h * 0.7 : 0);
+    a.rot = mv ? Math.sin(a.t * 5 * a.sp) * 3 : 0; a.sy = 1; a.depth = 0.75 + 0.5 * ((a.y - lo) / Math.max(1, hi - lo));
+  } else if (th.move === 'fly') {
+    if (a.tx === null || Math.hypot(a.tx - a.x, a.ty - a.y) < m.w * 0.04 || Math.random() < dt * 0.05) { a.tx = rand(m.w * 0.1, m.w * 0.9); a.ty = rand(lo, hi); }
+    const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy) || 1, sp = m.w * 0.1 * a.sp * (1 + a.react * 3), k = Math.min(1, dt * 1.4);
+    a.vx += (dx / d * sp - a.vx) * k; a.vy += (dy / d * sp - a.vy) * k; a.x += a.vx * dt; a.y += a.vy * dt;
+    if (Math.abs(a.vx) > 8) a.dir = a.vx > 0 ? 1 : -1;
+    a.off = Math.sin(a.t * 3 + a.ph) * a.h * 0.06; a.rot = a.dir * clamp(a.vy / (Math.abs(a.vx) + 30) * 28, -28, 28); a.sy = 1 + Math.sin(a.t * (12 + a.react * 10)) * 0.08; a.depth = 1;
+  } else if (th.move === 'swim') {
+    a.x += a.dir * m.w * 0.075 * a.sp * (1 + a.react * 3.2) * dt; a.y += (a.ty - a.y) * Math.min(1, dt * 0.4);
+    if (Math.random() < dt * 0.15) a.ty = rand(lo, hi);
+    a.off = Math.sin(a.t * 1.7 * a.sp + a.ph) * a.h * 0.12; a.rot = Math.sin(a.t * (6 + a.react * 8)) * 4; a.sy = 1; a.depth = 1;
+  } else {
+    a.x += a.vx * dt; a.y += a.vy * dt; a.rot += a.spin * dt * (1 + a.react * 8); a.off = 0; a.sy = 1; a.depth = 1;
+    if (Math.abs(a.vx) > 2) a.dir = a.vx > 0 ? 1 : -1;
+    if (a.x < halfW) { a.x = halfW; a.vx = Math.abs(a.vx); } if (a.x > m.w - halfW) { a.x = m.w - halfW; a.vx = -Math.abs(a.vx); }
+    if (a.y < halfH) { a.y = halfH; a.vy = Math.abs(a.vy); } if (a.y > m.h - halfH) { a.y = m.h - halfH; a.vy = -Math.abs(a.vy); }
+  }
+  if (th.move === 'walk' || th.move === 'swim') {
+    if (a.x < halfW) { a.x = halfW; a.dir = 1; } if (a.x > m.w - halfW) { a.x = m.w - halfW; a.dir = -1; }
+  }
+  if (th.move === 'fly') { a.x = clamp(a.x, halfW, m.w - halfW); }
+  a.y = clamp(a.y, halfH, m.h - halfH);
+  const yy = clamp(a.y + a.off, halfH, m.h - halfH), fx = (a.faces === 'right' ? 1 : -1) * (a.dir >= 0 ? 1 : -1);
+  a.el.style.transform = 'translate(' + a.x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px) translate(-50%,-50%)';
+  a.el.style.setProperty('--h', a.h.toFixed(1) + 'px'); a.el.style.zIndex = String(Math.round(yy));
+  a.body.style.transform = 'rotate(' + a.rot.toFixed(1) + 'deg) scale(' + (fx * pulse).toFixed(3) + ',' + (a.sy * pulse).toFixed(3) + ')';
+}
+function react(a) {
+  a.react = 0.6; a.dart = 1; a.el.classList.add('tapped'); setTimeout(() => a.el.classList.remove('tapped'), 500);
+  if (THEMES[S.theme].move === 'float') a.spin = (Math.random() < 0.5 ? -1 : 1) * 160;
+  if (window.HP) { HP.pop(); HP.spark(a.el); if (a.name) HP.say(a.name); }
+}
+let last = 0;
+function frame(ts) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (ts - last) / 1000 || 0.016); last = ts;
+  const m = metrics();
+  shown().forEach((a) => { if (!a.el.hidden) step(a, dt, m); });
+}
+
+/* ---------- dunia: latar & hiasan ---------- */
+const DECOR = {
+  land: '<div class="aw-sun"></div><div class="aw-cloud c1"></div><div class="aw-cloud c2"></div><svg class="aw-hills" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0 30V15Q10 4 24 12T50 9T76 13T100 7V30Z" fill="#7cc65e"/><path d="M0 30V22Q16 13 34 20T70 18T100 20V30Z" fill="#6ab84d"/></svg><svg class="aw-grass" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 10L3 3L6 10L9 2L12 10L16 4L19 10L24 3L27 10L33 4L36 10L42 2L45 10L51 4L54 10L60 3L63 10L69 4L72 10L78 2L81 10L87 4L90 10L96 3L100 10Z" fill="#3f8f33"/></svg>',
+  air: '<div class="aw-sun"></div><div class="aw-cloud c1"></div><div class="aw-cloud c2"></div><div class="aw-cloud c3"></div>',
+  sea: '<div class="aw-rays"></div><svg class="aw-seabed" viewBox="0 0 100 16" preserveAspectRatio="none"><path d="M0 16V8Q18 2 38 8T76 6T100 9V16Z" fill="#e9d28c"/></svg><svg class="aw-weed" style="left:8%" viewBox="0 0 10 30"><path d="M5 30Q0 22 5 15T5 0" stroke="#2fb66a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg><svg class="aw-weed" style="left:14%;animation-delay:-1.5s" viewBox="0 0 10 30"><path d="M5 30Q10 22 5 15T5 2" stroke="#25a05a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg><svg class="aw-weed" style="left:86%;animation-delay:-2.5s" viewBox="0 0 10 30"><path d="M5 30Q0 22 5 15T5 0" stroke="#2fb66a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
+  space: '<div class="aw-planet"></div><div class="aw-moon"></div>',
+};
+let bubbleTimer = null;
+function setTheme(t, silent) {
+  S.theme = t; stage.dataset.t = t; $('deco').innerHTML = DECOR[t];
+  if (t === 'space') { let s = ''; for (let i = 0; i < 70; i++) s += '<span class="aw-star" style="left:' + rand(0, 100).toFixed(1) + '%;top:' + rand(0, 100).toFixed(1) + '%;animation-delay:' + rand(0, 3).toFixed(1) + 's"></span>'; $('deco').insertAdjacentHTML('beforeend', s); }
+  clearInterval(bubbleTimer); $('fx').textContent = '';
+  if (t === 'sea') bubbleTimer = setInterval(() => { const b = document.createElement('span'), z = rand(8, 22); b.className = 'aw-bubble'; b.style.cssText = 'left:' + rand(3, 97).toFixed(1) + '%;width:' + z.toFixed(0) + 'px;height:' + z.toFixed(0) + 'px'; $('fx').appendChild(b); setTimeout(() => b.remove(), 6200); }, 700);
+  document.querySelectorAll('#segTheme button').forEach((b) => b.classList.toggle('on', b.dataset.v === t));
+  const m = metrics(); shown().forEach((a) => reset(a, m)); applyVisibility(); savePrefs();
+  if (!silent) say_('');
+}
+
+/* ---------- daftar hewan di bawah panggung ---------- */
+function renderTray() {
+  const tray = $('tray'); tray.textContent = '';
+  const list = shown();
+  $('trayTitle').textContent = S.list.length ? 'Your animals (' + S.list.length + ')' : 'Sample animals';
+  list.forEach((a) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'aw-thumb' + (visible(a) ? '' : ' dim'); b.setAttribute('aria-label', 'Edit ' + (a.name || 'animal'));
+    const im = document.createElement('img'); im.src = a.img; im.alt = '';
+    const nm = document.createElement('b'); nm.textContent = a.name || 'No name';
+    const hb = document.createElement('span'); hb.textContent = HAB[a.habitat];
+    b.append(im, nm, hb); b.onclick = () => (a.sample ? say('These are sample animals. Add your own photos to edit them.', '') : openEditor(a));
+    tray.appendChild(b);
+  });
+}
+
+/* ---------- tambah foto ---------- */
+const niceName = (f) => { const n = f.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim(); if (/^(img|dsc|photo|image|pxl|screenshot|whatsapp)\b.*\d/i.test(n) || /^\d+$/.test(n)) return ''; return n.replace(/\b\w/g, (c) => c.toUpperCase()).slice(0, 24); };
+const uid = () => 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function addAnimal(data) {
+  const a = Object.assign({ id: uid(), name: '', habitat: 'any', faces: 'right', scale: 1, tol: 28, remove: true, ar: 1, created: Date.now() }, data);
+  if (!S.list.length) { S.samples.forEach((s) => s.el && s.el.remove()); S.samples = []; }
+  S.list.push(a); build(a); saveAnimal(a); return a;
+}
+async function addFiles(files) {
+  files = [...files]; if (!files.length) return;
+  let added = 0; const problems = [], warns = new Set();
+  for (const f of files) {
+    if (S.list.length >= MAX_ANIMALS) { problems.push('The limit is ' + MAX_ANIMALS + ' animals. Remove some to add more.'); break; }
+    if (!/^image\//.test(f.type) && !/\.(jpe?g|png|gif|webp|bmp)$/i.test(f.name)) { problems.push('“' + f.name + '” is not an image.'); continue; }
+    if (f.size > MAX_FILE) { problems.push('“' + f.name + '” is too large (maximum 12 MB).'); continue; }
+    try {
+      const r = await processFile(f, true, 28); if (r.warn) warns.add(r.warn);
+      const th = THEMES[S.theme];
+      addAnimal({ name: niceName(f.name), habitat: th.habitat, img: r.img, orig: r.orig, ar: r.ar }); added++;
+    } catch (e) { problems.push('Could not read “' + f.name + '”. Try a JPEG or PNG photo.'); }
+  }
+  applyVisibility();
+  const msg = [added ? 'Added ' + added + (added === 1 ? ' animal.' : ' animals.') + ' Tap one to hear its name.' : '', ...problems, ...warns].filter(Boolean).join(' ');
+  say(msg, problems.length && !added ? 'err' : added ? 'ok' : '');
+}
+
+/* ---------- pengubah (editor) ---------- */
+function openEditor(a) {
+  closeEditor();
+  const root = $('modalRoot'), ov = document.createElement('div'); ov.className = 'aw-ov';
+  ov.onmousedown = (e) => { if (e.target === ov) closeEditor(); };
+  const html = '<div class="aw-modal" role="dialog" aria-modal="true" aria-label="Edit animal"><div class="aw-mh"><h2>Edit animal</h2><button class="aw-x" aria-label="Close" id="edClose">×</button></div><div class="aw-mb"><div><div class="aw-prev"><img id="edImg" alt=""></div></div><div class="aw-form">' +
+    '<label>Name<input id="edName" maxlength="24" list="edNames" autocomplete="off"></label><datalist id="edNames"></datalist>' +
+    '<label>Lives in<select id="edHab"><option value="land">Land</option><option value="air">Air</option><option value="sea">Sea</option><option value="any">Any world</option></select></label>' +
+    '<label>In the drawing, the animal faces<select id="edFace"><option value="right">Right</option><option value="left">Left</option></select></label>' +
+    '<label>Size <input id="edSize" type="range" min="0.6" max="1.8" step="0.1"></label>' +
+    '<label class="row"><input id="edRemove" type="checkbox"> Remove the paper background</label>' +
+    '<label>Cut-out strength <input id="edTol" type="range" min="5" max="60" step="1"></label></div>' +
+    '<div class="aw-act"><button class="btn sm" id="edHear">Hear the name</button><button class="btn sm danger" id="edDel">Delete</button><button class="btn sm alt" id="edDone">Done</button></div></div></div>';
+  ov.innerHTML = html; root.appendChild(ov); S.editing = a;
+  const $e = (id) => ov.querySelector('#' + id);
+  $e('edImg').src = a.img; $e('edName').value = a.name; $e('edHab').value = a.habitat; $e('edFace').value = a.faces; $e('edSize').value = a.scale; $e('edRemove').checked = a.remove; $e('edTol').value = a.tol;
+  $e('edTol').disabled = $e('edRemove').disabled = !canvasOK() || !a.orig;
+  if (window.fetch) fetch('/api/vocab?category=animals&limit=60', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : { words: [] })).then((d) => { $e('edNames').innerHTML = (d.words || []).map((w) => '<option value="' + String(w.word).replace(/"/g, '&quot;') + '">').join(''); }).catch(() => {});
+  $e('edName').oninput = (e) => { a.name = e.target.value.trim().slice(0, 24); labelOf(a); renderTray(); saveSoon(a); };
+  $e('edHab').onchange = (e) => { a.habitat = e.target.value; applyVisibility(); saveSoon(a); };
+  $e('edFace').onchange = (e) => { a.faces = e.target.value; saveSoon(a); };
+  $e('edSize').oninput = (e) => { a.scale = +e.target.value; saveSoon(a); };
+  let rt = null;
+  const redo = () => { clearTimeout(rt); rt = setTimeout(async () => { try { a.remove = $e('edRemove').checked; a.tol = +$e('edTol').value; const r = await reprocess(a); a.img = r.img; a.ar = r.ar; a.img_.src = a.img; $e('edImg').src = a.img; renderTray(); saveSoon(a); if (r.warn) say(r.warn, 'err'); else say_(''); } catch (e) { say('Could not update the cut-out.', 'err'); } }, 250); };
+  $e('edRemove').onchange = redo; $e('edTol').oninput = redo;
+  $e('edHear').onclick = () => { if (window.HP && a.name) HP.say(a.name); };
+  $e('edClose').onclick = $e('edDone').onclick = closeEditor;
+  $e('edDel').onclick = () => { if (!confirm('Delete this animal?')) return; removeAnimal(a); closeEditor(); };
+  $e('edName').focus();
+}
+function closeEditor() { $('modalRoot').textContent = ''; if (S.editing) { saveAnimal(S.editing); S.editing = null; } }
+function removeAnimal(a) {
+  a.deleted = true; clearTimeout(timers.get(a.id)); if (S.editing === a) S.editing = null;
+  a.el.remove(); S.list = S.list.filter((x) => x !== a); persist(() => idb('readwrite', (s) => s.delete(a.id)));
+  if (!S.list.length) { S.samples = SAMPLES(); S.samples.forEach(build); }
+  applyVisibility(); say('Animal deleted.', '');
+}
+function clearAll() {
+  if (!S.list.length) { say('There is nothing to clear.', ''); return; }
+  if (!confirm('Delete all ' + S.list.length + ' animals from this device?')) return;
+  S.editing = null; $('modalRoot').textContent = '';
+  S.list.forEach((a) => { a.deleted = true; clearTimeout(timers.get(a.id)); a.el.remove(); }); S.list = []; persist(() => idb('readwrite', (s) => s.clear()));
+  S.samples = SAMPLES(); S.samples.forEach(build); applyVisibility(); say('All animals were deleted from this device.', 'ok');
+}
+
+/* ---------- kontrol ---------- */
+document.querySelectorAll('#segTheme button').forEach((b) => { b.onclick = () => setTheme(b.dataset.v); });
+$('showNames').checked = S.showNames; $('showAll').checked = S.showAll;
+$('showNames').onchange = (e) => { S.showNames = e.target.checked; shown().forEach(labelOf); savePrefs(); };
+$('showAll').onchange = (e) => { S.showAll = e.target.checked; applyVisibility(); savePrefs(); };
+['file', 'cam'].forEach((id) => { $(id).onchange = (e) => { const fs = [...e.target.files]; e.target.value = ''; addFiles(fs); }; });
+$('clear').onclick = clearAll;
+let dragDepth = 0;
+stage.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; $('drop').hidden = false; });
+stage.addEventListener('dragover', (e) => e.preventDefault());
+stage.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; $('drop').hidden = true; } });
+stage.addEventListener('drop', (e) => { e.preventDefault(); dragDepth = 0; $('drop').hidden = true; if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+if (document.fullscreenEnabled || document.webkitFullscreenEnabled) {
+  $('full').hidden = false;
+  $('full').onclick = () => { const w = $('wrap'); if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document); else (w.requestFullscreen || w.webkitRequestFullscreen).call(w); };
+}
+
+/* ---------- mulai ---------- */
+S.samples = SAMPLES(); S.samples.forEach(build);
+setTheme(S.theme, true);
+requestAnimationFrame(frame);
+DB.ready = dbOpen();
+DB.ready.then(() => { DB.ok = true; return idb('readonly', (s) => s.getAll()); }).then((rows) => {
+  if (!rows || !rows.length) return;
+  rows.sort((x, y) => x.created - y.created).slice(0, MAX_ANIMALS).forEach((r) => { if (!S.list.length) { S.samples.forEach((s) => s.el && s.el.remove()); S.samples = []; } const a = Object.assign({ sample: false }, r); S.list.push(a); build(a); });
+  applyVisibility(); say('Welcome back! Your ' + S.list.length + (S.list.length === 1 ? ' animal is' : ' animals are') + ' ready.', 'ok');
+}).catch(() => { if (!DB.ok) say('Saving is not available in this browser. Your animals stay only until you close this page.', ''); });
+</script>
+<script src="/hive.js" defer></script></body></html>
