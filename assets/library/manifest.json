@@ -783,67 +783,7 @@
       ]
     }
   ],
-  "usage": [
-    {
-      "game": "tap-animals",
-      "asset": "animal.dog.character",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "tap-animals",
-      "asset": "animal.cat.character",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "tap-animals",
-      "asset": "animal.cow.character",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "tap-animals",
-      "asset": "animal.frog.character",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "count-fruits",
-      "asset": "fruit.apple.whole",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "count-fruits",
-      "asset": "fruit.banana.whole",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "count-fruits",
-      "asset": "fruit.strawberry.whole",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "count-fruits",
-      "asset": "fruit.orange.whole",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "count-fruits",
-      "asset": "fruit.grape.whole",
-      "role": "vocabulary-image"
-    },
-    {
-      "game": "count-fruits",
-      "asset": "object.star",
-      "role": "reward"
-    },
-    {
-      "game": "times-table",
-      "asset": "object.star",
-      "role": "reward"
-    },
-    {
-      "game": "times-table",
-      "asset": "object.trophy",
-      "role": "reward"
-    },
+    "usage": [
     {
       "game": "catalog",
       "asset": "animal.dog.character",
