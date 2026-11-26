@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Read the Clock · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css">
+<style>
+.clockbox{width:min(86vw,400px);margin:6px auto 0;position:relative}
+#clock .hand{transform-origin:100px 100px}
+#clock.roll .hand{transition:transform 1.9s cubic-bezier(.1,.75,.12,1)}
+.clockbox.rolling{animation:wob .22s linear infinite}
+.clockbox.pop{animation:pop .6s var(--ease)}
+@keyframes wob{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.08)}100%{transform:scale(1)}}
+.sp{position:absolute;left:50%;top:50%;font-style:normal;font-size:24px;pointer-events:none;animation:fly .95s ease-out forwards}
+@keyframes fly{from{transform:translate(-50%,-50%) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(1.25);opacity:0}}
+.ans .rolling{font-family:Fredoka,sans-serif;font-size:26px;font-weight:700;animation:blink .5s ease-in-out infinite alternate}
+@keyframes blink{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.clockbox.rolling,.clockbox.pop,.ans .rolling,.sp{animation:none}}
+#clock{width:100%;height:auto;display:block;touch-action:none;cursor:grab;filter:drop-shadow(0 16px 24px rgba(70,60,160,.28))}
+#clock:active{cursor:grabbing}
+.legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:10px 0 0;font-size:15px;color:var(--mute)}
+.legend i{display:inline-block;width:26px;height:6px;border-radius:4px;vertical-align:middle;margin-right:6px}
+.ans{margin:16px auto 0;max-width:540px;min-height:96px;padding:14px 18px;border-radius:20px;background:var(--card);border:1px solid var(--line);text-align:center;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.ans .big{font-family:Fredoka,sans-serif;font-size:clamp(24px,5.4vw,34px);font-weight:700;line-height:1.25}
+.ans .alt,.ans .dig{color:var(--mute);font-size:18px}
+.lbl{margin:14px 0 0;font-family:Fredoka,sans-serif;font-weight:700;color:var(--mute);text-align:center;font-size:15px}
+</style></head><body>
+<div class="top"><a class="back" href="/">← Back</a></div>
+<main>
+<h1 class="rise">Read the Clock</h1>
+<p class="sub rise" style="--i:1">Set the hands, let the students say the time in English, then press Show answer. Drag the hands, use the buttons, or pick a random time.</p>
+<section class="stage rise" style="--i:2">
+<div class="clockbox"><svg id="clock" viewBox="0 0 200 200" role="img" aria-label="Analog clock. Drag the hands to set the time."></svg></div>
+<div class="legend"><span><i style="background:#1a1b4b"></i>Short hand = hour</span><span><i style="background:#ff5fa8"></i>Long hand = minute</span></div>
+
+<div class="ans" id="ans" aria-live="polite"></div>
+<div class="row" style="margin-top:12px">
+  <button class="btn" id="toggle">Show answer</button>
+  <button class="btn alt" id="say" hidden>🔊 Hear it</button>
+  <button class="btn alt" id="rnd">Random time</button>
+</div>
+
+<div class="lbl">Random time level</div>
+<div class="chips" id="levels" style="justify-content:center;margin:8px 0 0">
+  <button data-l="oclock">O’clock</button><button data-l="half">Half past</button><button data-l="quarter">Quarter</button><button data-l="five" class="on">Every 5 min</button><button data-l="any">Any minute</button>
+</div>
+
+<div class="lbl">Set the hands</div>
+<div class="row" style="margin-top:8px">
+  <button class="btn alt" id="hDn" aria-label="One hour back">Hour −</button><button class="btn alt" id="hUp" aria-label="One hour forward">Hour +</button>
+  <button class="btn alt" id="mDn" aria-label="Minutes back">Minute −</button><button class="btn alt" id="mUp" aria-label="Minutes forward">Minute +</button>
+</div>
+<div class="chips" id="steps" style="justify-content:center;margin:10px 0 0">
+  <button data-s="5" class="on">Snap to 5 min</button><button data-s="1">Snap to 1 min</button>
+</div>
+<div class="row" style="margin-top:10px"><label style="color:var(--mute);font-size:16px"><input type="checkbox" id="numsOn" checked> Show numbers 1–12</label></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',svg=$('clock');
+const ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],TENS=['','','twenty','thirty','forty','fifty'];
+const w=n=>n<20?ONES[n]:TENS[Math.floor(n/10)]+(n%10?'-'+ONES[n%10]:'');
+const next=h=>h%12+1,prev=h=>h===1?12:h-1,rand=n=>Math.floor(Math.random()*n);
+let h=3,m=0,step=5,level='five',shown=false,drag=null,rolling=false;
+
+/* ---- the time in English ---- */
+function ans(){
+  const n=next(h),dig=h+':'+String(m).padStart(2,'0');
+  if(m===0)return{main:`It’s ${w(h)} o’clock.`,alt:'',dig};
+  if(m===15)return{main:`It’s a quarter past ${w(h)}.`,alt:`It’s ${w(h)} fifteen.`,dig};
+  if(m===30)return{main:`It’s half past ${w(h)}.`,alt:`It’s ${w(h)} thirty.`,dig};
+  if(m===45)return{main:`It’s a quarter to ${w(n)}.`,alt:`It’s ${w(h)} forty-five.`,dig};
+  if(m<30){
+    const u=m%5===0?`${w(m)} past`:`${w(m)} minute${m===1?'':'s'} past`;
+    return{main:`It’s ${u} ${w(h)}.`,alt:`It’s ${w(h)} ${m<10?'oh '+w(m):w(m)}.`,dig};
+  }
+  const d=60-m,u=d%5===0?`${w(d)} to`:`${w(d)} minute${d===1?'':'s'} to`;
+  return{main:`It’s ${u} ${w(n)}.`,alt:`It’s ${w(h)} ${w(m)}.`,dig};
+}
+
+/* ---- draw the clock ---- */
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+el('circle',{cx:100,cy:100,r:97,fill:'#8b7bff'});
+el('circle',{cx:100,cy:100,r:91,fill:'#fff'});
+for(let i=0;i<60;i++){const a=i*Math.PI/30,big=i%5===0,r1=big?79:85;
+  el('line',{x1:100+r1*Math.sin(a),y1:100-r1*Math.cos(a),x2:100+89*Math.sin(a),y2:100-89*Math.cos(a),stroke:'#1a1b4b','stroke-width':big?2.4:1,'stroke-linecap':'round'})}
+const numG=el('g',{});
+for(let i=1;i<=12;i++){const a=i*Math.PI/6;
+  el('text',{x:100+66*Math.sin(a),y:100-66*Math.cos(a)+6,'text-anchor':'middle','font-size':17,'font-weight':700,'font-family':'Fredoka,sans-serif',fill:'#1a1b4b'},numG).textContent=i}
+const hourG=el('g',{class:'hand'}),minG=el('g',{class:'hand'});
+el('line',{x1:100,y1:106,x2:100,y2:56,stroke:'#1a1b4b','stroke-width':7,'stroke-linecap':'round'},hourG);
+el('line',{x1:100,y1:110,x2:100,y2:24,stroke:'#ff5fa8','stroke-width':4.5,'stroke-linecap':'round'},minG);
+el('circle',{cx:100,cy:100,r:6,fill:'#1a1b4b'});el('circle',{cx:100,cy:100,r:2.4,fill:'#ff5fa8'});
+
+const hd=()=>(h%12)*30+m*.5,md=()=>m*6;
+function setHands(a,b){hourG.style.transform=`rotate(${a}deg)`;minG.style.transform=`rotate(${b}deg)`}
+function draw(){setHands(hd(),md());shown=false;paint()}
+function paint(){
+  const box=$('ans');box.textContent='';
+  $('toggle').textContent=shown?'Hide answer':'Show answer';$('say').hidden=!shown;
+  $('toggle').disabled=$('rnd').disabled=rolling;$('rnd').textContent=rolling?'Rolling…':'Random time';
+  if(rolling){const r=document.createElement('div');r.className='rolling';r.textContent='🎲 Rolling…';box.appendChild(r);return}
+  if(!shown){const p=document.createElement('div');p.className='hint';p.textContent='What time is it? Think first, then press Show answer.';box.appendChild(p);return}
+  const a=ans();
+  [['big',a.main],['alt',a.alt&&'Or: '+a.alt.replace('It’s ','').replace(/\.$/,'')],['dig','Digital: '+a.dig]].forEach(([c,t])=>{if(!t)return;const d=document.createElement('div');d.className=c;d.textContent=t;box.appendChild(d)});
+}
+
+/* ---- drag the hands ---- */
+function pos(e){const r=svg.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  return{a:(Math.atan2(dx,-dy)*180/Math.PI+360)%360,d:Math.hypot(dx,dy)/(r.width/2)}}
+function move(e){
+  const a=pos(e).a;
+  if(drag==='m'){
+    const n=(step===5?Math.round(a/30)*5:Math.round(a/6))%60;
+    if(m>=45&&n<=14)h=next(h);else if(m<=14&&n>=45)h=prev(h);
+    m=n;
+  }else h=Math.round(((a-m*.5+360)%360)/30)%12||12;
+  draw();
+}
+svg.addEventListener('pointerdown',e=>{if(rolling)return;drag=pos(e).d>.5?'m':'h';svg.setPointerCapture(e.pointerId);move(e)});
+svg.addEventListener('pointermove',e=>{if(drag)move(e)});
+['pointerup','pointercancel'].forEach(ev=>svg.addEventListener(ev,()=>{drag=null}));
+
+/* ---- buttons ---- */
+$('hUp').onclick=()=>{if(rolling)return;h=next(h);draw()};
+$('hDn').onclick=()=>{if(rolling)return;h=prev(h);draw()};
+$('mUp').onclick=()=>{if(rolling)return;m+=step;if(m>=60){m-=60;h=next(h)}draw()};
+$('mDn').onclick=()=>{if(rolling)return;m-=step;if(m<0){m+=60;h=prev(h)}draw()};
+$('toggle').onclick=()=>{if(rolling)return;shown=!shown;paint()};
+$('say').onclick=()=>{
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(ans().main.replace('It’s','It is'));u.lang='en-US';u.rate=.85;speechSynthesis.speak(u);
+};
+function sparkle(){
+  const box=svg.parentNode;
+  for(let i=0;i<12;i++){
+    const s=document.createElement('i'),a=i/12*Math.PI*2+Math.random()*.4,d=150+Math.random()*60;
+    s.className='sp';s.textContent=['✨','⭐','✨','🎉'][i%4];
+    s.style.setProperty('--x',Math.round(Math.sin(a)*d)+'px');s.style.setProperty('--y',Math.round(-Math.cos(a)*d)+'px');
+    box.appendChild(s);setTimeout(()=>s.remove(),1000);
+  }
+}
+$('rnd').onclick=()=>{
+  if(rolling)return;
+  const old=h+':'+m;
+  do{h=1+rand(12);m={oclock:0,half:30,quarter:[15,45][rand(2)],five:5*rand(12),any:rand(60)}[level]}while(h+':'+m===old);
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){draw();return}
+  const box=svg.parentNode;
+  rolling=true;shown=false;paint();
+  box.classList.remove('pop');box.classList.add('rolling');svg.classList.add('roll');
+  svg.getBoundingClientRect();                       /* start the transition from the current position */
+  setHands(hd()+720,md()+1800);                      /* spin: 2 turns (hour), 5 turns (minute), slowing down */
+  setTimeout(()=>{
+    svg.classList.remove('roll');setHands(hd(),md()); /* same visual angle, just without the extra turns */
+    box.classList.remove('rolling');box.classList.add('pop');
+    rolling=false;paint();sparkle();
+  },2000);
+};
+function pick(box,attr,fn){box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));fn(b.dataset[attr])})}
+pick($('levels'),'l',v=>{level=v;if(v==='any'||v==='five'){step=v==='any'?1:5;$('steps').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.s==step))}});
+pick($('steps'),'s',v=>{step=+v});
+$('numsOn').onchange=e=>{numG.style.display=e.target.checked?'':'none'};
+draw();
+</script>
+<script src="/hive.js" defer></script></body></html>
