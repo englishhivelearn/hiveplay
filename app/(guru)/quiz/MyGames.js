@@ -53,34 +53,51 @@ function StartModal({ game, onClose }) {
 }
 
 function KeyModal({ onClose, onLinked }) {
-  const [key, setKey] = useState('');
+  const [info, setInfo] = useState(null);
   const [other, setOther] = useState('');
   const [msg, setMsg] = useState({ t: '', ok: false });
   const [copied, setCopied] = useState(false);
-  useEffect(() => { api('/api/quiz/owner').then((d) => setKey(d.key)).catch((e) => setMsg({ t: e.message })); }, []);
-  async function link() {
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { api('/api/quiz/owner').then(setInfo).catch((e) => setMsg({ t: e.message })); }, []);
+  async function add() {
+    setBusy(true);
     try {
-      await api('/api/quiz/owner', { method: 'POST', body: { key: other } });
-      setMsg({ t: 'Linked! This device now shows the games from that key.', ok: true });
+      const d = await api('/api/quiz/owner', { method: 'POST', body: { key: other } });
+      setInfo(d); setOther('');
+      setMsg({ t: 'Key added. Its games now appear in your list, and your own games are still here.', ok: true });
       onLinked();
-    } catch (e) { setMsg({ t: e.message, ok: false }); }
+    } catch (e) { setMsg({ t: e.message, ok: false }); } finally { setBusy(false); }
   }
-  async function copy() { try { await navigator.clipboard.writeText(key); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch {} }
+  async function remove(l) {
+    if (!confirm(`Remove key ····${l.fp}? Its ${l.games} game${l.games === 1 ? '' : 's'} will no longer show on this device. Nothing is deleted.`)) return;
+    try { const d = await api('/api/quiz/owner', { method: 'DELETE', body: { fp: l.fp } }); setInfo(d); setMsg({ t: '', ok: false }); onLinked(); }
+    catch (e) { setMsg({ t: e.message, ok: false }); }
+  }
+  async function copy() { try { await navigator.clipboard.writeText(info.key); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch {} }
   return (
     <Modal onClose={onClose}>
-      <h2>Use your games on another device</h2>
-      <p className="qz-muted" style={{ marginTop: 0 }}>Your games belong to this browser. To open them on a phone or another computer, copy this key and paste it there. Keep it private: anyone with the key can edit your games.</p>
-      <label className="qz-lbl">Your key</label>
-      <div className="qz-key">{key || '…'}</div>
-      <div className="row" style={{ justifyContent: 'flex-start', marginTop: 8 }}><button className="btn sm alt" onClick={copy} disabled={!key}>{copied ? 'Copied ✓' : 'Copy key'}</button></div>
-      <label className="qz-lbl" htmlFor="ok">Have a key from another device?</label>
+      <h2>Use your games on more devices</h2>
+      <p className="qz-muted" style={{ marginTop: 0 }}>Each device has its own key. Copy this device’s key and add it on your other device (or add that device’s key here) to see the same games on both. Adding a key never removes the games already on this device. Keep keys private: anyone with a key can edit those games.</p>
+      <label className="qz-lbl">This device’s key{info ? ` · ${info.mine} game${info.mine === 1 ? '' : 's'}` : ''}</label>
+      <div className="qz-key">{info ? info.key : '…'}</div>
+      <div className="row" style={{ justifyContent: 'flex-start', marginTop: 8 }}><button className="btn sm alt" onClick={copy} disabled={!info}>{copied ? 'Copied ✓' : 'Copy key'}</button></div>
+
+      <label className="qz-lbl" htmlFor="ok">Add a key from another device</label>
       <input id="ok" className="qz-in" placeholder="Paste the key here" value={other} onChange={(e) => setOther(e.target.value)} autoComplete="off" />
-      <p className="qz-muted" style={{ fontSize: 15, margin: '6px 0 0' }}>This replaces the games shown on this device with the ones from that key. Save your own key above first if you want to come back.</p>
+      <div className="row" style={{ justifyContent: 'flex-start', marginTop: 8 }}><button className="btn" onClick={add} disabled={busy || !other.trim()}>＋ Add key</button></div>
+
+      {info && info.links.length > 0 && <>
+        <label className="qz-lbl">Keys added to this device ({info.links.length}/{info.max})</label>
+        {info.links.map((l) => (
+          <div className="qz-row" key={l.fp} style={{ margin: '6px 0', padding: '10px 14px' }}>
+            <div className="l"><b style={{ fontSize: 17 }}>Key ····{l.fp}</b><div className="qz-muted" style={{ fontSize: 15 }}>{l.games} game{l.games === 1 ? '' : 's'}</div></div>
+            <button className="btn sm alt" onClick={() => remove(l)}>Remove</button>
+          </div>
+        ))}
+        <p className="qz-muted" style={{ fontSize: 15, margin: '6px 0 0' }}>Games you create here always belong to this device’s own key.</p>
+      </>}
       {msg.t && <div className={msg.ok ? 'qz-ok' : 'qz-err'} role="alert">{msg.t}</div>}
-      <div className="row" style={{ justifyContent: 'flex-end' }}>
-        <button className="btn alt" onClick={onClose}>Close</button>
-        <button className="btn" onClick={link} disabled={!other.trim()}>Use this key</button>
-      </div>
+      <div className="row" style={{ justifyContent: 'flex-end' }}><button className="btn alt" onClick={onClose}>Close</button></div>
     </Modal>
   );
 }

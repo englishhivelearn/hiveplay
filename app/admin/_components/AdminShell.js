@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV = [
-  { h: 'SYSTEM', items: [['/admin/access', 'Teacher access code']] },
+  { h: 'SYSTEM', items: [['/admin/access', 'Teacher access code'], ['/admin/quiz', 'Quiz games']] },
 ];
 export default function AdminShell({ children }) {
   const path = usePathname() || '';
