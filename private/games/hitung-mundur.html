@@ -1,0 +1,365 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Countdown · Hive Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/hive.css">
+<style>
+.themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0 6px}
+.theme{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:22px;padding:14px 10px;font:inherit;cursor:pointer;transition:transform .2s var(--ease),border-color .2s}
+.theme:hover{transform:translateY(-3px)}
+.theme .e{display:block;font-size:54px;line-height:1.1}
+.theme b{display:block;font-family:Fredoka,sans-serif;font-size:19px;margin-top:4px}
+.theme small{color:var(--mute)}
+.theme.on{border-color:var(--b1);background:linear-gradient(120deg,color-mix(in srgb,var(--b1) 22%,transparent),color-mix(in srgb,var(--b2) 22%,transparent))}
+.lbl{margin:20px 0 0;font-family:Fredoka,sans-serif;font-weight:700;color:var(--mute);font-size:15px}
+.timeset{display:flex;gap:8px;justify-content:center;align-items:center;margin:10px 0 0}
+.timeset input{width:min(26vw,120px);text-align:center;font:700 clamp(36px,8vw,56px) Fredoka,sans-serif;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:20px;padding:6px 4px;-moz-appearance:textfield}
+.timeset input::-webkit-outer-spin-button,.timeset input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.timeset input:focus{outline:3px solid color-mix(in srgb,var(--b1) 55%,transparent);border-color:var(--b1)}
+.timeset span{font:700 44px Fredoka,sans-serif;color:var(--mute)}
+.timeset small{display:block;color:var(--mute);font-size:13px;font-weight:700;margin-top:2px}
+.opt{display:block;margin:14px 0 4px;color:var(--mute);font-size:16px}
+#startBtn{font-size:22px;padding:14px 38px;margin-top:14px}
+.err{color:#e0455e;font-weight:700;min-height:1.4em;margin:8px 0 0}
+
+#run:fullscreen{background:var(--bg);display:flex;flex-direction:column;justify-content:center;padding:18px;overflow:auto}
+.scene{position:relative;border-radius:36px;overflow:hidden;padding:14px 10px 20px;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow);transition:background .6s}
+.t-balloon{background:linear-gradient(#7fcdff,#cdeeff 62%,#fff)}
+.t-bomb{background:radial-gradient(circle at 50% 38%,#5d6290,#25274a 72%)}
+.t-candle{background:radial-gradient(circle at 50% 34%,#4b3b5f,#171230 76%)}
+.t-candle.out{background:radial-gradient(circle at 50% 34%,#2a2340,#0d0a1d 76%)}
+.scene svg{width:min(88vw,50vh);max-width:560px;height:auto;display:block;margin:0 auto;overflow:visible}
+#run:fullscreen .scene svg{width:min(90vw,56vh)}
+.t-bomb svg{width:min(88vw,42vh)}
+#run:fullscreen .t-bomb svg{width:min(90vw,50vh)}
+/* balon: panggung setinggi layar, balon dan hitungan memenuhinya */
+.t-balloon{height:min(76vh,760px);min-height:420px;padding:0}
+#run:fullscreen .t-balloon{height:calc(100vh - 118px)}
+.t-balloon svg{position:absolute;inset:0;width:100%;max-width:none;height:100%;margin:0}
+.t-balloon .digits{position:absolute;left:0;right:0;top:2%;z-index:2;font-size:clamp(56px,11vw,130px);color:#fff;-webkit-text-stroke:.06em #1a1b4b;paint-order:stroke fill;text-shadow:0 6px 24px rgba(0,0,0,.3)}
+.t-balloon .over{position:absolute;left:0;right:0;top:30%;z-index:2;color:#fff;-webkit-text-stroke:.05em #bf1a3c;paint-order:stroke fill}
+.t-balloon.done .digits{font-size:clamp(34px,6vw,64px)}
+.digits{font-family:Fredoka,sans-serif;font-weight:700;font-size:clamp(64px,15vw,170px);line-height:1;font-variant-numeric:tabular-nums;color:#1a1b4b;margin-top:2px}
+.t-bomb .digits,.t-candle .digits{color:#fff}
+.digits.warn{color:#ff4d4d!important;animation:cdpulse .5s ease-in-out infinite alternate}
+.digits.hide{visibility:hidden}
+.over{display:none;font-family:Fredoka,sans-serif;font-weight:700;font-size:clamp(40px,9vw,100px);line-height:1.05;color:#e0455e;animation:cdpop .6s var(--ease) both}
+.t-bomb .over,.t-candle .over{color:#ffd23f}
+.scene.done .over{display:block}
+.scene.done .digits{font-size:clamp(34px,6vw,64px);opacity:.75}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:cdflash .7s ease-out}
+.scene.boom{animation:cdshake .55s linear}
+.ctl{margin-top:16px}
+
+/* animasi di dalam SVG */
+svg .tb{transform-box:fill-box}
+.sway{transform-origin:200px 332px;animation:cdsway 3.2s ease-in-out infinite alternate}
+.tense .sway{animation-duration:.35s}
+.bjit{transform-origin:200px 270px}
+.tense .bjit{animation:cdjit .12s linear infinite}
+.glow{animation:cdglow .6s ease-in-out infinite alternate;opacity:0}
+.tense .glow{opacity:.5}
+.spark{animation:cdspark .12s linear infinite alternate}
+.flick{transform-box:fill-box;transform-origin:50% 100%;animation:cdflick .2s ease-in-out infinite alternate}
+.popstar{transform-box:fill-box;transform-origin:center;animation:cdpopstar .9s ease-out forwards}
+.ring{transform-box:fill-box;transform-origin:center;animation:cdring 1s cubic-bezier(.1,.7,.3,1) forwards;opacity:0}
+.smoke path{opacity:0}
+.smoking path{animation:cdsmoke 2.4s ease-out forwards}
+.smoking path:nth-child(2){animation-delay:.25s}.smoking path:nth-child(3){animation-delay:.5s}
+@keyframes cdsway{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+@keyframes cdjit{0%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}100%{transform:translate(-1px,-2px)}}
+@keyframes cdglow{from{opacity:.05}to{opacity:.55}}
+@keyframes cdspark{from{transform:scale(.85) rotate(0)}to{transform:scale(1.2) rotate(25deg)}}
+@keyframes cdflick{from{transform:scale(.96,1) skewX(-3deg)}to{transform:scale(1.04,1.07) skewX(3deg)}}
+@keyframes cdpopstar{0%{transform:scale(.2);opacity:1}60%{opacity:1}100%{transform:scale(1.5);opacity:0}}
+@keyframes cdring{0%{transform:scale(.1);opacity:1}100%{transform:scale(var(--s,2.6));opacity:0}}
+@keyframes cdsmoke{0%{opacity:0;transform:translateY(0)}20%{opacity:.7}100%{opacity:0;transform:translateY(-95px)}}
+@keyframes cdpulse{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes cdpop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes cdflash{0%{opacity:.95}100%{opacity:0}}
+@keyframes cdshake{0%,100%{transform:translate(0)}15%{transform:translate(-14px,6px)}30%{transform:translate(12px,-8px)}45%{transform:translate(-9px,-5px)}60%{transform:translate(8px,6px)}80%{transform:translate(-4px,2px)}}
+@media (prefers-reduced-motion:reduce){.sway,.tense .bjit,.glow,.spark,.digits.warn,.scene.boom{animation:none!important}.ring,.popstar{animation-duration:.01s!important}}
+</style></head><body>
+<div class="top"><a class="back" href="/">← Back</a></div>
+<main>
+<section id="setup">
+  <h1 class="rise">Countdown</h1>
+  <p class="sub rise" style="--i:1">Pick a theme, set the time, and press Start. When time runs out, something happens!</p>
+  <div class="stage rise" style="--i:2">
+    <h2>Choose a theme</h2>
+    <div class="themes" id="themes" role="group" aria-label="Theme">
+      <button class="theme on" data-t="balloon"><span class="e">🎈</span><b>Balloon Pop</b><small>It keeps growing…</small></button>
+      <button class="theme" data-t="bomb"><span class="e">💣</span><b>Bomb Fuse</b><small>The fuse burns down</small></button>
+      <button class="theme" data-t="candle"><span class="e">🕯️</span><b>Melting Candle</b><small>Slowly melting away</small></button>
+    </div>
+    <div class="lbl">Set the timer</div>
+    <div class="timeset">
+      <div><input id="min" type="number" min="0" max="99" value="1" inputmode="numeric" aria-label="Minutes"><small>minutes</small></div>
+      <span>:</span>
+      <div><input id="sec" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="Seconds"><small>seconds</small></div>
+    </div>
+    <div class="chips" id="presets" style="justify-content:center;margin:14px 0 0">
+      <button data-s="10">10 sec</button><button data-s="30">30 sec</button><button data-s="60">1 min</button><button data-s="120">2 min</button><button data-s="180">3 min</button><button data-s="300">5 min</button><button data-s="600">10 min</button>
+    </div>
+    <label class="opt"><input type="checkbox" id="showNum" checked> Show the numbers while counting</label>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="startBtn">▶ Start countdown</button>
+  </div>
+</section>
+
+<section id="run" hidden>
+  <div class="scene" id="scene">
+    <div id="art"></div>
+    <div class="digits" id="digits">01:00</div>
+    <div class="over" id="over">Time’s up!</div>
+    <div class="flash" id="flash"></div>
+  </div>
+  <div class="row ctl">
+    <button class="btn" id="pauseBtn">⏸ Pause</button>
+    <button class="btn alt" id="againBtn">↻ Restart</button>
+    <button class="btn alt" id="setupBtn">⚙ Change settings</button>
+    <button class="btn alt" id="fsBtn">⛶ Fullscreen</button>
+  </div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+const rand=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
+const hp=(n,...a)=>{try{window.HP&&window.HP[n]&&window.HP[n](...a)}catch(e){}};
+function el(name,attrs,parent){const e=document.createElementNS(NS,name);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+const fmt=ms=>{const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+
+/* potongan kecil yang terbang keluar (balon pecah, ledakan) */
+function chips(g,n,{cx,cy,colors,min,max,size,shape}){
+  for(let i=0;i<n;i++){
+    const a=rand(0,Math.PI*2),d=rand(min,max),s=rand(size[0],size[1]);
+    const pos=el('g',{transform:`translate(${cx} ${cy})`},g);
+    const p=shape==='shard'
+      ?el('polygon',{points:`0,${-s} ${s*.8},${s*.6} ${-s*.7},${s*.4}`,fill:pick(colors)},pos)
+      :el('circle',{r:s/2,fill:pick(colors)},pos);
+    p.style.transformBox='fill-box';p.style.transformOrigin='center';
+    if(p.animate)p.animate([{transform:'translate(0,0) rotate(0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d+rand(10,60)}px) rotate(${rand(-540,540)}deg) scale(.3)`,opacity:0}],{duration:rand(700,1500),easing:'cubic-bezier(.1,.7,.3,1)',fill:'forwards'});
+  }
+}
+
+/* ===================== tema 1: balon ===================== */
+// Balon membesar sampai memenuhi seluruh layar (area panggung), lalu meletus.
+const balloon={
+  cls:'t-balloon',
+  html:()=>`<svg viewBox="0 0 940 640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A balloon that keeps growing">
+  <defs><radialGradient id="bg1" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#ff9fae"/><stop offset=".55" stop-color="#ff3d5a"/><stop offset="1" stop-color="#bf1a3c"/></radialGradient></defs>
+  <g id="sway" class="sway">
+    <path id="str" d="M0 0" stroke="#ffffff" stroke-opacity=".85" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <g id="bal" transform="translate(470 560) scale(.3)">
+      <path d="M0 0 C-48 -14 -92 -78 -86 -138 C-80 -196 -36 -226 0 -226 C36 -226 80 -196 86 -138 C92 -78 48 -14 0 0Z" fill="url(#bg1)"/>
+      <ellipse cx="-36" cy="-158" rx="14" ry="32" fill="#fff" opacity=".45" transform="rotate(18 -36 -158)"/>
+      <path d="M0 0 L-10 14 L10 14Z" fill="#bf1a3c"/>
+    </g>
+  </g>
+  <g id="fx"></g></svg>`,
+  bind(root){
+    this.svg=root.querySelector('svg');this.bal=root.querySelector('#bal');this.fx=root.querySelector('#fx');this.sway=root.querySelector('#sway');this.str=root.querySelector('#str');
+    this.scene=root.closest('.scene');this.p=0;this.layout();
+    if(window.ResizeObserver){this.ro=new ResizeObserver(()=>this.layout());this.ro.observe(this.scene)}
+  },
+  // ukuran panggung bisa berubah (jendela, layar penuh): hitung ulang supaya balon selalu pas memenuhi layar
+  layout(){
+    const W=this.scene.clientWidth||940,H=this.scene.clientHeight||640;
+    Object.assign(this,{W,H,kx:W/2,ky:H*.88,smin:H*.16/226,smax:Math.max(H*1.3/226,W*.8/172)});
+    this.svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    this.sway.style.transformOrigin=`${this.kx}px ${this.ky}px`;
+    const k=H/440;this.str.setAttribute('d',`M${this.kx} ${this.ky+14*k} C${this.kx-12*k} ${this.ky+40*k} ${this.kx+14*k} ${this.ky+56*k} ${this.kx} ${this.ky+88*k}`);
+    this.draw();
+  },
+  draw(){const s=this.smin+(this.smax-this.smin)*this.p;this.bal.setAttribute('transform',`translate(${this.kx} ${this.ky}) scale(${s.toFixed(4)})`)},
+  update(p,left){this.p=p;this.draw();this.svg.classList.toggle('tense',left<=10000&&left>0)},
+  finish(){
+    this.ro&&this.ro.disconnect();
+    this.svg.classList.remove('tense');this.bal.setAttribute('display','none');this.str.setAttribute('opacity','.5');
+    const {W,H}=this,k=H/440*1.2,cx=W/2,cy=H*.42,g=this.fx,star=el('g',{transform:`translate(${cx} ${cy}) scale(${k.toFixed(3)})`},g),inner=el('g',{class:'popstar'},star);
+    const pts=[];for(let i=0;i<16;i++){const r=i%2?55:105,a=i/16*Math.PI*2;pts.push(`${(Math.cos(a)*r).toFixed(1)},${(Math.sin(a)*r).toFixed(1)}`)}
+    el('polygon',{points:pts.join(' '),fill:'#ffd23f',stroke:'#ff7a1a','stroke-width':5,'stroke-linejoin':'round'},inner);
+    const t=el('text',{x:0,y:14,'text-anchor':'middle','font-size':44,'font-weight':700,'font-family':'Fredoka,sans-serif',fill:'#bf1a3c'},inner);t.textContent='POP!';
+    chips(g,40,{cx,cy,colors:['#ff3d5a','#ff6b81','#bf1a3c','#ffd23f'],min:120*k,max:330*k,size:[14*k,30*k],shape:'shard'});
+    hp('pop');hp('burst');
+  },
+  reset(){}
+};
+
+/* ===================== tema 2: bom ===================== */
+// Sumbu panjang yang berkelok melintasi atas bom (±3,5x lebih panjang dari versi pertama): tiga kurva Bezier kubik.
+const FUSE_SEGS=[
+  [[200,228],[200,190],[150,200],[150,170]],
+  [[150,170],[150,130],[330,150],[330,110]],
+  [[330,110],[330,70],[90,90],[90,52]],
+  [[90,52],[90,26],[190,32],[262,30]],
+];
+const FUSE_D='M200 228 '+FUSE_SEGS.map(s=>`C${s[1].join(' ')} ${s[2].join(' ')} ${s[3].join(' ')}`).join(' ');
+const fusePts=(()=>{const pts=[],bez=(s,t)=>{const u=1-t,[a,b,c,d]=s;return[u*u*u*a[0]+3*u*u*t*b[0]+3*u*t*t*c[0]+t*t*t*d[0],u*u*u*a[1]+3*u*u*t*b[1]+3*u*t*t*c[1]+t*t*t*d[1]]};
+  FUSE_SEGS.forEach((s,k)=>{for(let i=k?1:0;i<=60;i++)pts.push(bez(s,i/60))});
+  const cum=[0];for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  return{pts,cum,len:cum[cum.length-1]}})();
+const fuseAt=f=>{const L=fusePts.len*Math.min(1,Math.max(0,f));let i=1;while(i<fusePts.cum.length-1&&fusePts.cum[i]<L)i++;
+  const a=fusePts.pts[i-1],b=fusePts.pts[i],seg=fusePts.cum[i]-fusePts.cum[i-1]||1,k=(L-fusePts.cum[i-1])/seg;return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k]};
+const bomb={
+  cls:'t-bomb',
+  html:()=>`<svg viewBox="0 0 400 520" role="img" aria-label="A bomb with a long burning fuse">
+  <defs><radialGradient id="bb1" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#5b5f7a"/><stop offset=".5" stop-color="#2b2d42"/><stop offset="1" stop-color="#0d0e1c"/></radialGradient>
+  <radialGradient id="bs1"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="#ffe36e"/><stop offset="1" stop-color="#ff7a1a" stop-opacity="0"/></radialGradient></defs>
+  <g id="bomb">
+    <g transform="translate(0 80)">
+      <ellipse cx="200" cy="404" rx="96" ry="12" fill="#000" opacity=".25"/>
+      <g class="bjit">
+        <circle cx="200" cy="270" r="112" fill="url(#bb1)"/>
+        <ellipse cx="158" cy="224" rx="32" ry="18" fill="#fff" opacity=".2" transform="rotate(-35 158 224)"/>
+        <path d="M118 300 Q200 340 282 300" stroke="#ff4d4d" stroke-width="10" fill="none" stroke-linecap="round" opacity=".85"/>
+        <rect x="166" y="150" width="68" height="36" rx="9" fill="#6b6f85"/><rect x="160" y="178" width="80" height="13" rx="6.5" fill="#4a4d63"/>
+        <circle class="glow" cx="200" cy="270" r="112" fill="#ff3d3d" opacity="0"/>
+      </g>
+    </g>
+    <path d="${FUSE_D}" stroke="#5a4426" stroke-width="9" fill="none" stroke-linecap="round" opacity=".28"/>
+    <path id="fuse" d="${FUSE_D}" stroke="#e0b96d" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${fusePts.len.toFixed(1)} ${(fusePts.len*2).toFixed(1)}"/>
+    <g id="spark" transform="translate(262 30)"><g class="spark tb"><circle r="24" fill="url(#bs1)"/><g stroke="#ffd23f" stroke-width="3" stroke-linecap="round"><path d="M0 -20V-8M0 8V20M-20 0H-8M8 0H20M-14 -14L-7 -7M14 14L7 7M14 -14L7 -7M-14 14L-7 7"/></g><circle r="6" fill="#fff"/></g></g>
+  </g>
+  <g id="fx"></g></svg>`,
+  bind(root){this.root=root;this.svg=root.querySelector('svg');this.fuse=root.querySelector('#fuse');this.spark=root.querySelector('#spark');this.bomb=root.querySelector('#bomb');this.fx=root.querySelector('#fx')},
+  update(p,left){
+    const rem=1-p;
+    this.fuse.setAttribute('stroke-dasharray',`${(rem*fusePts.len).toFixed(1)} ${(fusePts.len*2).toFixed(1)}`);
+    const [x,y]=fuseAt(rem);this.spark.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+    this.svg.classList.toggle('tense',left<=10000&&left>0);
+  },
+  finish(){
+    this.svg.classList.remove('tense');this.bomb.setAttribute('display','none');
+    const g=this.fx;
+    [['#ffffff',1.6,0],['#ffd23f',2.6,.05],['#ff7a1a',3.3,.1],['#d62828',3.8,.16]].forEach(([c,s,d])=>{
+      const r=el('circle',{cx:200,cy:350,r:60,fill:c,class:'ring'},g);r.style.setProperty('--s',s);r.style.animationDelay=d+'s';});
+    const boom=el('text',{x:200,y:372,'text-anchor':'middle','font-size':84,'font-weight':700,'font-family':'Fredoka,sans-serif',fill:'#fff',stroke:'#d62828','stroke-width':8,'paint-order':'stroke',class:'popstar'},g);boom.textContent='BOOM!';
+    chips(g,26,{cx:200,cy:350,colors:['#2b2d42','#0d0e1c','#ff7a1a','#ffd23f','#6b6f85'],min:100,max:300,size:[12,30],shape:'shard'});
+    const sc=this.root.closest('.scene');sc.classList.add('boom');
+    const f=$('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');
+    hp('no');hp('burst',['star','honey']);
+  },
+  reset(){const f=$('flash');f.classList.remove('go');this.root.closest('.scene').classList.remove('boom')}
+};
+
+/* ===================== tema 3: lilin ===================== */
+const BASE=402,H0=250,H1=26;
+const DRIPS=[{x:144,w:12,ph:.04,k:2.4},{x:244,w:12,ph:.22,k:3.2},{x:194,w:11,ph:.42,k:1.9}];
+const candle={
+  cls:'t-candle',
+  html:()=>`<svg viewBox="0 0 400 440" role="img" aria-label="A candle that slowly melts">
+  <defs>
+    <linearGradient id="cw" x1="0" x2="1"><stop offset="0" stop-color="#fff3d2"/><stop offset=".5" stop-color="#ffe9ae"/><stop offset="1" stop-color="#efca7d"/></linearGradient>
+    <radialGradient id="ch"><stop offset="0" stop-color="#ffd36a" stop-opacity=".6"/><stop offset="1" stop-color="#ffd36a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="cf" cx=".5" cy=".75" r=".65"><stop offset="0" stop-color="#fff6c4"/><stop offset=".5" stop-color="#ffb62e"/><stop offset="1" stop-color="#ff6a1a"/></radialGradient>
+  </defs>
+  <circle id="halo" cx="200" cy="120" r="175" fill="url(#ch)"/>
+  <ellipse cx="200" cy="412" rx="128" ry="17" fill="#a77a22"/><ellipse cx="200" cy="406" rx="114" ry="12" fill="#e0b64a"/>
+  <ellipse id="pool" cx="200" cy="404" rx="62" ry="9" fill="#f6dc9a"/>
+  <g id="drips"></g>
+  <rect id="body" x="150" y="152" width="100" height="250" rx="8" fill="url(#cw)"/>
+  <ellipse id="top" cx="200" cy="152" rx="50" ry="11" fill="#fbe9ae"/><ellipse id="top2" cx="200" cy="153" rx="36" ry="6.5" fill="#f1cd78"/>
+  <line id="wick" x1="200" y1="152" x2="200" y2="134" stroke="#2b2230" stroke-width="4" stroke-linecap="round"/>
+  <g id="flame" transform="translate(200 134)"><g class="flick"><path d="M0 -64 C24 -36 28 -12 0 5 C-28 -12 -24 -36 0 -64Z" fill="url(#cf)"/><path d="M0 -34 C10 -20 11 -9 0 -1 C-11 -9 -10 -20 0 -34Z" fill="#fff6c8" opacity=".9"/></g></g>
+  <circle id="ember" cx="200" cy="140" r="5" fill="#ff5a2a" opacity="0"/>
+  <g id="smoke" class="smoke" fill="none" stroke="#c8c3d8" stroke-width="5" stroke-linecap="round">
+    <path opacity="0" d="M200 130 C186 108 214 96 200 72 C190 54 208 44 202 28"/><path opacity="0" d="M196 130 C210 110 184 96 198 76"/><path opacity="0" d="M204 130 C192 114 216 100 204 82"/>
+  </g></svg>`,
+  bind(root){const q=s=>root.querySelector(s);this.root=root;this.svg=q('svg');this.body=q('#body');this.top=q('#top');this.top2=q('#top2');this.wick=q('#wick');this.flame=q('#flame');this.halo=q('#halo');this.pool=q('#pool');this.ember=q('#ember');this.smoke=q('#smoke');
+    this.drips=DRIPS.map(d=>({d,r:el('rect',{x:d.x,width:d.w,rx:d.w/2,fill:'#f3cf82',stroke:'#d9a94a','stroke-width':1.2},q('#drips')),c:el('circle',{cx:d.x+d.w/2,r:d.w/2+1.5,fill:'#f3cf82',stroke:'#d9a94a','stroke-width':1.2},q('#drips'))}))},
+  update(p){
+    const h=H1+(H0-H1)*(1-p),y=BASE-h,sc=1-.3*p;
+    this.body.setAttribute('y',y.toFixed(1));this.body.setAttribute('height',h.toFixed(1));
+    this.top.setAttribute('cy',y.toFixed(1));this.top2.setAttribute('cy',(y+1.5).toFixed(1));
+    this.wick.setAttribute('y1',y.toFixed(1));this.wick.setAttribute('y2',(y-18).toFixed(1));
+    this.flame.setAttribute('transform',`translate(200 ${(y-16).toFixed(1)}) scale(${sc.toFixed(3)})`);
+    this.halo.setAttribute('cy',(y-50).toFixed(1));this.halo.setAttribute('opacity',(1-.45*p).toFixed(2));
+    this.pool.setAttribute('rx',(62+58*p).toFixed(1));this.pool.setAttribute('ry',(9+8*p).toFixed(1));
+    this.drips.forEach(({d,r,c})=>{const len=Math.max(0,Math.min(h-12,(p-d.ph)*d.k*190));
+      r.setAttribute('y',(y+6).toFixed(1));r.setAttribute('height',len.toFixed(1));
+      c.setAttribute('cy',(y+6+len).toFixed(1));c.setAttribute('opacity',len>2?1:0)});
+  },
+  finish(){
+    this.flame.setAttribute('display','none');this.halo.setAttribute('opacity','0');
+    this.root.closest('.scene').classList.add('out');
+    const y=Number(this.wick.getAttribute('y2'));this.ember.setAttribute('cy',y+2);this.ember.setAttribute('opacity','.9');
+    this.smoke.setAttribute('transform',`translate(0 ${y-134})`);this.smoke.classList.add('smoking');
+    hp('flip');
+  },
+  reset(){this.root.closest('.scene').classList.remove('out')}
+};
+const SCENES={balloon,bomb,candle};
+
+/* ===================== timer ===================== */
+let theme='balloon',total=0,remain=0,t0=0,state='idle',raf=0,lastSec=-1,showNum=true;
+const now=()=>performance.now();
+const scene=()=>SCENES[theme];
+
+function readTime(){
+  const m=Math.min(99,Math.max(0,parseInt($('min').value,10)||0)),s=Math.min(59,Math.max(0,parseInt($('sec').value,10)||0));
+  return m*60+s;
+}
+function setTime(sec){$('min').value=Math.floor(sec/60);$('sec').value=sec%60;markPreset()}
+function markPreset(){const t=readTime();$('presets').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.s===t))}
+function save(){try{localStorage.setItem('hp-countdown',JSON.stringify({theme,sec:readTime(),num:$('showNum').checked}))}catch(e){}}
+function load(){try{const v=JSON.parse(localStorage.getItem('hp-countdown')||'null');if(v){if(SCENES[v.theme])chooseTheme(v.theme);if(v.sec>0)setTime(v.sec);$('showNum').checked=v.num!==false}}catch(e){}}
+
+function chooseTheme(t){theme=t;$('themes').querySelectorAll('.theme').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+
+function render(r){
+  const p=total?1-r/total:1,left=r;
+  $('digits').textContent=fmt(r);
+  $('digits').classList.toggle('warn',left<=10000&&left>0);
+  scene().update(Math.min(1,Math.max(0,p)),left);
+  const sec=Math.ceil(left/1000);
+  if(sec!==lastSec){lastSec=sec;if(sec>0&&sec<=10)hp('tick',sec<=3?1500:1100)}
+}
+function tick(){
+  if(state!=='run')return;
+  const r=Math.max(0,remain-(now()-t0));
+  render(r);
+  if(r<=0)finish();
+}
+function loop(){tick();if(state==='run')raf=requestAnimationFrame(loop)}
+function begin(){
+  cancelAnimationFrame(raf);
+  const S=scene(),art=$('art'),sc=$('scene');
+  sc.className='scene '+S.cls;art.innerHTML=S.html();S.bind(art);S.reset();
+  $('over').textContent='Time’s up!';$('digits').classList.toggle('hide',!showNum);
+  remain=total;lastSec=-1;t0=now();state='run';
+  $('pauseBtn').textContent='⏸ Pause';$('pauseBtn').disabled=false;$('againBtn').classList.add('alt');
+  render(remain);loop();
+}
+function finish(){
+  if(state==='done')return;
+  state='done';cancelAnimationFrame(raf);
+  $('digits').classList.remove('hide','warn');$('digits').textContent='00:00';
+  $('scene').classList.add('done');scene().finish();
+  $('pauseBtn').disabled=true;$('againBtn').classList.remove('alt');
+}
+function pause(){
+  if(state==='run'){remain=Math.max(0,remain-(now()-t0));state='pause';cancelAnimationFrame(raf);$('pauseBtn').textContent='▶ Resume'}
+  else if(state==='pause'){t0=now();state='run';$('pauseBtn').textContent='⏸ Pause';loop()}
+}
+function showSetup(){state='idle';cancelAnimationFrame(raf);$('run').hidden=true;$('setup').hidden=false;if(document.fullscreenElement)document.exitFullscreen()}
+
+$('themes').addEventListener('click',e=>{const b=e.target.closest('.theme');if(b){chooseTheme(b.dataset.t);save()}});
+$('presets').addEventListener('click',e=>{const b=e.target.closest('button');if(b){setTime(+b.dataset.s);$('err').textContent='';save()}});
+['min','sec'].forEach(id=>{$(id).addEventListener('input',()=>{markPreset();$('err').textContent=''});$(id).addEventListener('keydown',e=>{if(e.key==='Enter')$('startBtn').click()})});
+$('startBtn').onclick=()=>{
+  const sec=readTime();
+  if(sec<1){$('err').textContent='Set a time of at least 1 second.';return}
+  total=sec*1000;showNum=$('showNum').checked;save();
+  $('setup').hidden=true;$('run').hidden=false;begin();
+};
+$('pauseBtn').onclick=pause;
+$('againBtn').onclick=begin;
+$('setupBtn').onclick=showSetup;
+$('fsBtn').onclick=()=>{const r=$('run');if(!document.fullscreenEnabled)return;document.fullscreenElement?document.exitFullscreen():r.requestFullscreen().catch(()=>{})};
+document.addEventListener('visibilitychange',tick);
+setInterval(tick,400); // tetap mendeteksi waktu habis walau tab sedang di latar belakang
+load();markPreset();
+</script>
+<script src="/hive.js" defer></script></body></html>
